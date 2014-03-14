@@ -19,5 +19,9 @@ class Loader(object):
         testset = []
         return testset
     
+    def get_train(self):
+        trainset = []
+        return trainset
+    
 if __name__ == '__main__':
 #    utils.load_to_tsv()
