@@ -24,4 +24,4 @@ class Loader(object):
         return trainset
     
 if __name__ == '__main__':
-#    utils.load_to_tsv()
+    print "Loader"

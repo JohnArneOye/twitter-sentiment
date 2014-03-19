@@ -7,7 +7,7 @@ import json
 from pprint import pprint
 import csv
 
-
+#Load tweets from site and store as tsv file
 def load_to_tsv():
     json_data = open("data/curl_twitterdata.json")
     data = json.load(json_data)
@@ -26,8 +26,8 @@ def load_to_tsv():
 def append_to_dataset(text):
     f = open("dataset.tsv","a")
     for t in text:
-        f.write(t+str("\n"))
+        try:
+            f.write(unicode(t)+str("\n"))
+        except UnicodeEncodeError:
+            pass
     f.close()
-#    
-#    out = csv.writer(open("dataset.tsv","w", encoding="utf-8"), delimiter="\n", quoting=csv.QUOTE_MINIMAL)
-#    out.writerow(text)

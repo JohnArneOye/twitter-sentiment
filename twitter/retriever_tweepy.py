@@ -34,18 +34,17 @@ class TweetRetriever(object):
         
     #Return a sample of tweets and add to current dataset
     def retrieve_for_dataset(self):
-        results = self.api.search(q="i", lang="no", rpp=15)
+        results = self.api.search(q="og", lang="no", count= 100)
+        results_list = [unicode(x.created_at) +str("\t")+ unicode(x.user.screen_name) +("\t")+ unicode(x.text) for x in results]
+        utils.append_to_dataset(results_list)
+        print "Fetched "+str(len(results_list)) +" tweets"
 #        for twt in results:
 #            print "%s" %(twt.text)
 #        utils.append_twitter_results(results)
-        results_list = [unicode(x.created_at) +str("\t")+ unicode(x.user.screen_name) +("\t")+ unicode(x.text) for x in results]
 #        for twt in results:
 #            results_string = results_string + unicode(twt.created_at) +"\t"+ unicode(twt.user.screen_name) +"\t"+ unicode(twt.text)
-        utils.append_to_dataset(results_list)
 
-        tweet = Tweet()
-        tweets = []
-        return tweets
+    
     
 class Tweet(object):
     
