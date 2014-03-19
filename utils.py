@@ -11,7 +11,6 @@ import csv
 def load_to_tsv():
     json_data = open("data/curl_twitterdata.json")
     data = json.load(json_data)
-#    pprint(data)
     tweets = [ x["_source"]["published"]+str("\t")+x["_source"]["publisher"]+str("\t")+x["_source"]["leadText"] for x in data["hits"]["hits"] ]
     for tweet in tweets:
         print tweet
@@ -20,9 +19,25 @@ def load_to_tsv():
     out.writerow(tweets)
     json_data.close()
 
+#Remove tweets with the RT tag on them.
+def remove_retweets(tweets):
+    for tweet in tweets:
+        if tweet.text()[:2] is "RT":
+            tweets.remove(tweet)
+    return tweets 
+    
+#Remove duplicates from a list of tweets
+def remove_duplicates(tweets):
+    return set(tweets)
+        
+#Take a results list and return a list of test strings
+def get_resultsets_text(results):
+    return [unicode(x.created_at) +str("\t")+ unicode(x.user.screen_name) +("\t")+ unicode(x.text).replace("\n", " ") for x in results]
 
+def get_tweets_text(tweets):
+    return [unicode(tweet.text) for tweet in tweets]
 
-#Append instances to dataset. Use format: [ DD-MM-YYYY HH:MM:SS \t USERNAME \t MESSAGE , etc. ]
+#Append instances to dataset
 def append_to_dataset(text):
     f = open("dataset.tsv","a")
     for t in text:
