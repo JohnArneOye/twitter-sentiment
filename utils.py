@@ -19,16 +19,6 @@ def load_to_tsv():
     out.writerow(tweets)
     json_data.close()
 
-#Remove tweets with the RT tag on them.
-def remove_retweets(tweets):
-    for tweet in tweets:
-        if tweet.text()[:2] is "RT":
-            tweets.remove(tweet)
-    return tweets 
-    
-#Remove duplicates from a list of tweets
-def remove_duplicates(tweets):
-    return set(tweets)
         
 #Take a results list and return a list of test strings
 def get_resultsets_text(results):
