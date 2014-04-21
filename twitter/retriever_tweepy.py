@@ -33,8 +33,8 @@ class TweetRetriever(object):
 #        self.api.update_status("tweepy and oauth up!")
         
     #Return a sample of tweets and add to current dataset
-    def retrieve_for_dataset(self):
-        results = self.api.search(q="erna solberg", lang="no", count= 100)
+    def retrieve_for_dataset(self, query):
+        results = self.api.search(q=query, lang="no", count= 100)
         results_list = utils.get_resultsets_text(results)
         utils.append_to_dataset(results_list)
         print "Fetched "+str(len(results_list)) +" tweets"
@@ -56,4 +56,5 @@ class Tweet(object):
         
 if __name__ == '__main__':
     retriever = TweetRetriever()
-    tweets = retriever.retrieve_for_dataset()
+    query = "erna solberg"
+    tweets = retriever.retrieve_for_dataset(query)
