@@ -19,7 +19,7 @@ def load_to_tsv():
     out.writerow(tweets)
     json_data.close()
 
-        
+
 #Take a results list and return a list of test strings
 def get_resultsets_text(results):
     return [unicode(x.created_at) +str("\t")+ unicode(x.user.screen_name) +("\t")+ unicode(x.text).replace("\n", " ") for x in results]
