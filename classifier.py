@@ -6,6 +6,8 @@ Created on 11. mars 2014
 from loader import Loader
 import argparse
 
+#Class takes in a selected model type(NV/SVM/ME) trains it on a dataset, then tests it
+
 class Classifier(object):
     
     def __init__(self, m):
@@ -17,9 +19,11 @@ class Classifier(object):
     def test(self):
         testset = Loader().get_test()
         
+    #take in a single tweet and classify it using the trained model
     def classify(self, tweet):
-        sum(map(self.model.get_sentiment, tweet.lower().split()))
-        self.tweet = tweet
+        sentiment = sum(map(self.model.get_sentiment, tweet.lower().split()))
+        return sentiment
+        
 
 if __name__ == '__main__':
     print "beebooop"
