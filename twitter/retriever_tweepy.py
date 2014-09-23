@@ -39,5 +39,5 @@ class Tweet(object):
         
 if __name__ == '__main__':
     retriever = TweetRetriever()
-    query = "erna solberg"
+    query = "det"
     tweets = retriever.retrieve_for_dataset(query)

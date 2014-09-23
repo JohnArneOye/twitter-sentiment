@@ -9,7 +9,11 @@ from model import Model
 class NB(Model):
     
     def __init__(self):
-        self.rates = []
-
+        self.text = []
+        self.word_freq = []
+    
+    def create_bagofwords(self):
+        self.bagofwords = []
+        
     
         
