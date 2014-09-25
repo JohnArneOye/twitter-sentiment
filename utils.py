@@ -3,9 +3,11 @@ Created on 12. mars 2014
 
 @author: JohnArne
 '''
+import sys
 import json
 from pprint import pprint
 import csv
+import codecs
 
 #Load tweets from site and store as tsv file
 def load_to_tsv():
@@ -29,10 +31,31 @@ def get_tweets_text(tweets):
 
 #Append instances to dataset
 def append_to_dataset(text):
+#    sys.stdout = codecs.getwriter('utf8')(sys.stdout)
     f = open("dataset.tsv","a")
     for t in text:
         try:
-            f.write(unicode(t)+str("\n"))
+            f.write(t.encode('utf8')+"\n")
+            print t.encode('utf8')+"\n"
         except UnicodeEncodeError:
-            pass
+            print "Unicode Encoding Error: ", t.encode('utf8')
+        except UnicodeDecodeError:
+            print "Unicode Decoding Error: ", t.encode('utf8')
+    f.close()
+    
+#Encode a text file into unicode
+def encode_unicode(textfilepath):
+    f = open(textfilepath, "r")
+    text = []
+    while f.next():
+        text.append(f.readline())
+    f.close()
+    f = open(textfilepath, "w")
+    for line in text:
+        try:
+            f.write(line.encode('utf8')+"\n")
+        except UnicodeEncodeError:
+            print "Unicode Encoding Error: ", line.encode('utf8')
+        except UnicodeDecodeError:
+            print "Unicode Decoding Error: ", line.encode('utf8')
     f.close()

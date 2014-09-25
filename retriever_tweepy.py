@@ -1,8 +1,4 @@
-'''
-Created on 10. mars 2014
 
-@author: JohnArne
-'''
 import tweepy
 import utils
 
@@ -39,5 +35,5 @@ class Tweet(object):
         
 if __name__ == '__main__':
     retriever = TweetRetriever()
-    query = "det"
+    query = "erna solberg"
     tweets = retriever.retrieve_for_dataset(query)

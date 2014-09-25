@@ -37,3 +37,10 @@ def lower_case(tweets):
 #Stem the tweet texts
 def stemming(tweets):
     return tweets
+
+#Run preprocessing upon all datasets
+def preprocess_all_datasets(datasets):
+    for dataset in datasets:
+        file = open(dataset, "w")
+        remove_duplicates()
+
