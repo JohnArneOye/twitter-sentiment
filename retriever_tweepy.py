@@ -25,7 +25,10 @@ class TweetRetriever(object):
         """
         Return a sample of tweets and add to current dataset text file
         """
-        results = self.api.search(q=self.query, lang="no", count= 100)
+        c = tweepy.Cursor(self.api.search, q=self.query, lang="no")
+        results = []
+        for tweet in c.items():
+            results.append(tweet)
         results_list = utils.get_resultsets_text(results)
         utils.append_to_dataset(results_list)
         print "Fetched "+str(len(results_list)) +" tweets"
