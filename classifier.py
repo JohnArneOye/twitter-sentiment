@@ -11,25 +11,38 @@ import retriever_tweepy
 import models
 from retriever_tweepy import TweetRetriever
 
-#Class takes in a selected model type(NV/SVM/ME) trains it on a dataset, then tests it
-
+"""
+Class for handling the training and testing of a given model.
+Takes in a selected model type(NV/SVM/ME) trains it on a given dataset, then tests it.
+"""
 class Classifier(object):
     
     def __init__(self, m):
         self.model = m
         
+    """
+    Trains the given model on the dataset.
+    """
     def train(self):
         self.model = None
         trainset = Loader().get_train()
-        
+       
+    """
+    Tests the given model on a partition of the dataset.
+    """ 
     def test(self):
         testset = Loader().get_test()
         
-    #take in a single tweet and classify it using the trained model
+    """
+    Takes in a single tweet and classifies it using the trained model
+    """
     def classify(self, tweet):
         sentiment = sum(map(self.model.get_sentiment, tweet.lower().split()))
         return sentiment
 
+"""
+The datasets for classification.
+"""
 datasets = {"random_dataset.tsv",
             "objective_dataset.tsv"}    
 

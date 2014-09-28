@@ -9,6 +9,9 @@ ACCESS_TOKEN = "462254796-mLqIDTfa1e0ODYfksV1CiEunCIT5MuJ3avvp2kt9"
 ACCESS_SECRET = "EsRjaoF8ZAkQSNEk8s72Kf3aEStFV3k4epBLMsefDZtKd"
 
 class TweetRetriever(object):
+    """
+    Handler for retrieving tweets using the twitter API through Tweepy.
+    """
     
     query = ""
     def __init__(self, query):
@@ -18,21 +21,26 @@ class TweetRetriever(object):
         print "Connection to Twitter API is up."
         self.query = query
 
-     
-    #Return a sample of tweets and add to current dataset text file
     def retrieve_for_dataset(self):
+        """
+        Return a sample of tweets and add to current dataset text file
+        """
         results = self.api.search(q=self.query, lang="no", count= 100)
         results_list = utils.get_resultsets_text(results)
         utils.append_to_dataset(results_list)
         print "Fetched "+str(len(results_list)) +" tweets"
     
-    #Fetch a sample of tweets and return them as tweets objects
     def retrieve_as_tweets(self):
+        """
+        Fetch a sample of tweets and return them as tweets objects
+        """
         tweets = []
         return tweets
     
-    
 class Tweet(object):
+    """
+    Class for wrapping tweet information.
+    """
     
     def __init__(self):
         self.user = ""
@@ -40,6 +48,18 @@ class Tweet(object):
         self.timestamp = ""
         self.subjectivity = 0
         self.polarity = 0
+        
+    def to_tsv(self):
+        """
+        Convert the data in this tweet to the .tsv format used to store it in .tsv files.
+        """
+        return ""
+    
+def to_tweet(self, text):
+    """
+    Convert a given .tsv formatted text line to a tweet object
+    """
+    return Tweet()
         
 if __name__ == '__main__':
     retriever = TweetRetriever("erna solberg")

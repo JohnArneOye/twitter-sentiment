@@ -22,6 +22,9 @@ import requests
 #    
 #    return tweets
 
+"""
+Retrieve tweets using web request.
+"""
 def retrieve_tweets():
     url_string = 'http://vm-6123.idi.ntnu.no:9200/_all/_search?pretty'
     query_string = '{"from":0, "size":100, "query": {"match_all": {}}, "filter": {"bool": {"must": [ {"match_all": {}}, {"terms": {"_type": ["\"article\""] }}, {"fquery": {"query": {"field": {"type": {"query": "\"tweet\""}}}}}] }}, "sort": [ {"published": {"order": "\"desc\"" }} ] }' 

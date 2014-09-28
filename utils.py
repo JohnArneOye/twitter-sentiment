@@ -9,8 +9,10 @@ from pprint import pprint
 import csv
 import codecs
 
-#Load tweets from site and store as tsv file
 def load_to_tsv():
+    """
+    Loads tweets from site and store as tsv file.
+    """
     json_data = open("data/curl_twitterdata.json")
     data = json.load(json_data)
     tweets = [ x["_source"]["published"]+str("\t")+x["_source"]["publisher"]+str("\t")+x["_source"]["leadText"] for x in data["hits"]["hits"] ]
@@ -21,16 +23,22 @@ def load_to_tsv():
     out.writerow(tweets)
     json_data.close()
 
-
-#Take a results list and return a list of test strings
 def get_resultsets_text(results):
+    """
+    Takes a results list and return a list of test strings
+    """
     return [unicode(x.created_at) +str("\t")+ unicode(x.user.screen_name) +("\t")+ unicode(x.text).replace("\n", " ") for x in results]
 
 def get_tweets_text(tweets):
+    """
+    Returns a list of text bodies for the given set of tweets.
+    """
     return [unicode(tweet.text) for tweet in tweets]
 
-#Append instances to dataset
 def append_to_dataset(text):
+    """
+    Appends text instances to dataset.
+    """
 #    sys.stdout = codecs.getwriter('utf8')(sys.stdout)
     f = open("dataset.tsv","a")
     for t in text:
@@ -43,8 +51,10 @@ def append_to_dataset(text):
             print "Unicode Decoding Error: ", t.encode('utf8')
     f.close()
     
-#Encode a text file into unicode
 def encode_unicode(textfilepath):
+    """
+    Encodes a text file into utf8.
+    """
     f = open(textfilepath, "r")
     text = []
     while f.next():
