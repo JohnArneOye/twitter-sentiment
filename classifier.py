@@ -56,7 +56,7 @@ if __name__ == '__main__':
     
     parsameters = parser.parse_args()
     if parsameters.encodeunicode:
-        utils.encode_unicode("dataset.tsv")
+        utils.encode_unicode()
     if parsameters.preprocess:
         preprocessing.preprocess_all_datasets()
     if parsameters.tweet_query:

@@ -52,16 +52,14 @@ def append_to_dataset(text):
             print "Unicode Decoding Error: ", t.encode('utf8')
     f.close()
     
-def encode_unicode(textfilepath):
+def encode_unicode():
     """
-    Encodes a text file into utf8.
+    Encodes all text files into utf8.
     """
-    f = open(textfilepath, "r")
-    text = []
-    while f.next():
-        text.append(f.readline())
+    f = open("data/random_dataset.tsv", "r")
+    text = f.readlines()
     f.close()
-    f = open(textfilepath, "w")
+    f = open("data/random_dataset.tsv", "w")
     for line in text:
         try:
             f.write(line.encode('utf8')+"\n")
