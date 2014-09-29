@@ -64,6 +64,9 @@ def to_tweet(self, text):
     """
     return Tweet()
         
+
+        
+        
 if __name__ == '__main__':
     retriever = TweetRetriever("erna solberg")
     tweets = retriever.retrieve_for_dataset()

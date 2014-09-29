@@ -3,6 +3,7 @@ Created on 21. apr. 2014
 
 @author: JohnArne
 '''
+import utils
 
 def remove_retweets(tweets):
     """
@@ -56,11 +57,11 @@ def stemming(tweets):
     return tweets
 
 
-def preprocess_all_datasets(datasets):
+def preprocess_all_datasets():
     """
     Run preprocessing upon all datasets
     """
-    for dataset in datasets:
+    for dataset in utils.datasets:
         file = open(dataset, "w")
         remove_duplicates()
 

@@ -40,7 +40,8 @@ def append_to_dataset(text):
     Appends text instances to dataset.
     """
 #    sys.stdout = codecs.getwriter('utf8')(sys.stdout)
-    f = open("dataset.tsv","a")
+    setnr = raw_input("Append to which dataset? 0: RandomSet 1: ObjectiveSet 2: RoseborgSet 3: ErnaSet ...")
+    f = open(datasets[int(setnr)],"a")
     for t in text:
         try:
             f.write(t.encode('utf8')+"\n")
@@ -69,3 +70,8 @@ def encode_unicode(textfilepath):
         except UnicodeDecodeError:
             print "Unicode Decoding Error: ", line.encode('utf8')
     f.close()
+    
+datasets = ["data/random_dataset.tsv",
+            "data/objective_dataset.tsv", 
+            "data/rosenborg_dataset.tsv",
+            "data/erna_dataset.tsv"]    
