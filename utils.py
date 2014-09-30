@@ -35,13 +35,12 @@ def get_tweets_text(tweets):
     """
     return [unicode(tweet.text) for tweet in tweets]
 
-def append_to_dataset(text):
+def append_to_dataset(text, dataset):
     """
     Appends text instances to dataset.
     """
 #    sys.stdout = codecs.getwriter('utf8')(sys.stdout)
-    setnr = raw_input("Append to which dataset? 0: RandomSet 1: ObjectiveSet 2: RoseborgSet 3: ErnaSet ...")
-    f = open(datasets[int(setnr)],"a")
+    f = open(dataset, "a")
     for t in text:
         try:
             f.write(t.encode('utf8')+"\n")
@@ -50,6 +49,16 @@ def append_to_dataset(text):
             print "Unicode Encoding Error: ", t.encode('utf8')
         except UnicodeDecodeError:
             print "Unicode Decoding Error: ", t.encode('utf8')
+    f.close()
+    
+    
+def store_dataset(text, dataset):
+    """
+    Stores the given sequence of strings to the given dataset as .tsv file.
+    """
+    f = open(dataset, "w")
+    for t in text:
+        f.write(t.encode('utf8')+"\n")
     f.close()
     
 def encode_unicode():
@@ -68,6 +77,19 @@ def encode_unicode():
         except UnicodeDecodeError:
             print "Unicode Decoding Error: ", line.encode('utf8')
     f.close()
+    
+def select_dataset():
+    setnr = raw_input("Write to which dataset? 0: RandomSet 1: ObjectiveSet 2: RoseborgSet 3: ErnaSet ... ")
+    return datasets[int(setnr)]
+
+def get_dataset(dataset):
+    """
+    Gets the given dataset from file as a list of strings.
+    """
+    f = open(dataset, "r")
+    lines = f.readlines()
+    f.close()
+    return lines
     
 datasets = ["data/random_dataset.tsv",
             "data/objective_dataset.tsv", 

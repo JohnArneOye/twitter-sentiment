@@ -9,6 +9,7 @@ import utils
 import preprocessing
 import retriever_tweepy
 import models
+import annotation
 from retriever_tweepy import TweetRetriever
 
 class Classifier(object):
@@ -52,6 +53,7 @@ if __name__ == '__main__':
     parser.add_argument("-q", action="store", dest="tweet_query", default=None, help="Get tweets using the given query.")
 #    parser.add_argument("-nb", action="append", dest="naive_bayes_values", default=[], help="Perform a naive bayes classification with the given values.")
     parser.add_argument("-nb", action="store_true", dest="naivebayes", default=False, help="Perform a default naive bayes classification.")
+    parser.add_argument("-a", action="store_true", dest="annotate", default=False, help="Start annotation sequence.")
     
     
     parsameters = parser.parse_args()
@@ -65,7 +67,9 @@ if __name__ == '__main__':
     if parsameters.naivebayes:
         #perform a naive bayes classification
         classifier = Classifier(models.nb.NB())
-    
+    if parsameters.annotate:
+        annotation.user_annotation()
+        
     
     
     

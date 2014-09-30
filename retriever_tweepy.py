@@ -27,10 +27,11 @@ class TweetRetriever(object):
         """
         c = tweepy.Cursor(self.api.search, q=self.query, lang="no")
         results = []
-        for tweet in c.items():
+        for tweet in c.items(500):
             results.append(tweet)
         results_list = utils.get_resultsets_text(results)
-        utils.append_to_dataset(results_list)
+        dataset = utils.select_dataset()
+        utils.append_to_dataset(results_list, dataset)
         print "Fetched "+str(len(results_list)) +" tweets"
     
     def retrieve_as_tweets(self):
@@ -39,32 +40,6 @@ class TweetRetriever(object):
         """
         tweets = []
         return tweets
-    
-class Tweet(object):
-    """
-    Class for wrapping tweet information.
-    """
-    
-    def __init__(self):
-        self.user = ""
-        self.text = ""
-        self.timestamp = ""
-        self.subjectivity = 0
-        self.polarity = 0
-        
-    def to_tsv(self):
-        """
-        Convert the data in this tweet to the .tsv format used to store it in .tsv files.
-        """
-        return ""
-    
-def to_tweet(self, text):
-    """
-    Convert a given .tsv formatted text line to a tweet object
-    """
-    return Tweet()
-        
-
         
         
 if __name__ == '__main__':
