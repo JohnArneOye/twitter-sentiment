@@ -29,7 +29,7 @@ class Tweet(object):
             tsvline = self.timestamp+"\t".encode('utf8')+sentiment+"\t"+self.user+"\t"+self.text
         else:
             tsvline = self.timestamp+"\t"+self.user+"\t"+self.text
-        return tsvline.encode('utf8')
+        return tsvline
             
     
     def get_sentiment(self):

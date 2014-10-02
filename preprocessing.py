@@ -4,6 +4,7 @@ Created on 21. apr. 2014
 @author: JohnArne
 '''
 import utils
+from calendar import main
 
 def remove_retweets(tweets):
     """
@@ -18,7 +19,7 @@ def remove_duplicates(tweets):
     """    
     Removes duplicates from a list of tweets.
     """
-    return set(tweets)
+    return list(set(tweets))
 
 def correct_words(tweets):
     """
@@ -59,9 +60,13 @@ def stemming(tweets):
 
 def preprocess_all_datasets():
     """
-    Run preprocessing upon all datasets
+    Run preprocessing on all datasets
     """
-    for dataset in utils.datasets:
-        tweetlines = utils.get_dataset(dataset)
-        remove_duplicates()
+#    for dataset in utils.datasets:
+    tweetlines = utils.get_dataset(utils.datasets[3])
+    tweetlines = remove_duplicates(tweetlines)
+    utils.store_dataset(tweetlines, utils.datasets[3])
+        
+if __name__ == '__main__':
+    preprocess_all_datasets()
 

@@ -63,7 +63,7 @@ def store_dataset(text, dataset):
 #        print unicode(t, 'cp866')
 #        encodedline = unicode(t, 'cp866').encode('utf8')
 #        print "Writing: "+encodedline
-        f.write(t)
+        f.write(t.encode('utf8'))
     f.close()
     
 def encode_unicode():
