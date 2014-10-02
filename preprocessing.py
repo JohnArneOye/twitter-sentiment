@@ -46,13 +46,13 @@ def remove_stopwords(tweets):
 
 def lower_case(tweets):
     """
-    Lowercase everything
+    Lowercases everything
     """
     return tweets
 
 def stemming(tweets):
     """
-    Stem the tweet texts
+    Stems the tweet texts
     """
     return tweets
 
@@ -62,6 +62,6 @@ def preprocess_all_datasets():
     Run preprocessing upon all datasets
     """
     for dataset in utils.datasets:
-        file = open(dataset, "w")
+        tweetlines = utils.get_dataset(dataset)
         remove_duplicates()
 

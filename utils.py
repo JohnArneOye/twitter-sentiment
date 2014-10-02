@@ -4,6 +4,7 @@ Created on 12. mars 2014
 @author: JohnArne
 '''
 import sys
+import os
 import json
 from pprint import pprint
 import csv
@@ -58,7 +59,11 @@ def store_dataset(text, dataset):
     """
     f = open(dataset, "w")
     for t in text:
-        f.write(t.encode('utf8')+"\n")
+#        print unicode("Encoding: ")
+#        print unicode(t, 'cp866')
+#        encodedline = unicode(t, 'cp866').encode('utf8')
+#        print "Writing: "+encodedline
+        f.write(t)
     f.close()
     
 def encode_unicode():
@@ -68,7 +73,7 @@ def encode_unicode():
     f = open("data/random_dataset.tsv", "r")
     text = f.readlines()
     f.close()
-    f = open("data/random_dataset.tsv", "w")
+    f = open("encoding_attempt/random_dataset.tsv", "w")
     for line in text:
         try:
             f.write(line.encode('utf8')+"\n")
@@ -88,9 +93,17 @@ def get_dataset(dataset):
     """
     f = open(dataset, "r")
     lines = f.readlines()
+    encodedlines = []
+    for line in lines:
+        encodedlines.append(line.decode('utf8'))
     f.close()
-    return lines
+    return encodedlines
     
+    
+sentiments = ["negative",
+              "neutral",
+              "positive"]
+
 datasets = ["data/random_dataset.tsv",
             "data/objective_dataset.tsv", 
             "data/rosenborg_dataset.tsv",
