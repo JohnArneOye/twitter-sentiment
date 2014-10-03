@@ -87,6 +87,11 @@ def select_dataset():
     setnr = raw_input("Write to which dataset? 0: RandomSet 1: ObjectiveSet 2: RoseborgSet 3: ErnaSet ... ")
     return datasets[int(setnr)]
 
+def select_complete_dataset():
+    setnr = raw_input("Write to which complete dataset? 0: RandomSet 1: ObjectiveSet 2: RoseborgSet 3: ErnaSet ... ")
+    return complete_datasets[int(setnr)]
+
+
 def get_dataset(dataset):
     """
     Gets the given dataset from file as a list of strings.
@@ -103,6 +108,11 @@ def get_dataset(dataset):
 sentiments = ["negative",
               "neutral",
               "positive"]
+
+complete_datasets = ["complete_datasets/random_dataset.tsv",
+                    "complete_datasets/objective_dataset.tsv", 
+                    "complete_datasets/rosenborg_dataset.tsv",
+                    "complete_datasets/erna_dataset.tsv"]
 
 datasets = ["data/random_dataset.tsv",
             "data/objective_dataset.tsv", 

@@ -30,7 +30,7 @@ class TweetRetriever(object):
         for tweet in c.items(500):
             results.append(tweet)
         results_list = utils.get_resultsets_text(results)
-        dataset = utils.select_dataset()
+        dataset = utils.select_complete_dataset()
         utils.append_to_dataset(results_list, dataset)
         print "Fetched "+str(len(results_list)) +" tweets"
     
@@ -41,7 +41,3 @@ class TweetRetriever(object):
         tweets = []
         return tweets
         
-        
-if __name__ == '__main__':
-    retriever = TweetRetriever("erna solberg")
-    tweets = retriever.retrieve_for_dataset()
