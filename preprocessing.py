@@ -102,7 +102,7 @@ def classification_preprocess_all_datasets():
         tweets = correct_words(tweets)
         
         
-vowels = ['a','e','i','o','u','y','æ','ø','å']
+vowels = ['a','e','i','o','u','y']
 
 special_chars = ['']
         

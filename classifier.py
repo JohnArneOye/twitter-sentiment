@@ -34,12 +34,14 @@ class Classifier(object):
         """ 
         testset = Loader().get_test()
         
-    def classify(self, tweet):
+    def classify(self, tweets):
         """
-        Takes in a single tweet and classifies it using the trained model
+        Takes in a list of tweets and classifies them using the trained model
         """
-        sentiment = sum(map(self.model.get_sentiment, tweet.lower().split()))
-        return sentiment  
+        sentiments = []
+        for tweet in tweets:
+            sentiments.append(self.model.get_sentiment(tweet.text))
+        return sentiments
     
     def save_model(self):
         file = open()
