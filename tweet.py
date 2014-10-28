@@ -65,6 +65,9 @@ class Tweet(object):
         """
         return "\n--------------\n"+" \n"+self.user+"\n"+self.text+"\n--------------\n"
     
+    def __eq__(self, other):
+        return self.text == other.text
+    
 def to_tweet(text):
     """
     Convert a given .tsv formatted text line to a tweet object

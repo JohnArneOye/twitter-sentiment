@@ -62,7 +62,7 @@ if __name__ == '__main__':
     if parsameters.encodeunicode:
         utils.encode_unicode()
     if parsameters.preprocess:
-        preprocessing.preprocess_all_datasets()
+        preprocessing.initial_preprocess_all_datasets()
     if parsameters.tweet_query:
         retriever = TweetRetriever(parsameters.tweet_query)
         retriever.retrieve_for_dataset()

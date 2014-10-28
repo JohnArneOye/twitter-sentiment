@@ -25,7 +25,16 @@ def user_annotation():
     annotated_to = 0
     i = 0
     while i < len(tweets):
-        print unicode(tweets[i])
+#        tweets[i].text.encode('utf8')
+        text = tweets[i].text
+        text.encode('utf8')
+        try:
+            print unicode(text)
+        except UnicodeEncodeError:
+            print "Could not print tweet number "+str(i+1) +". Deleting tweet..."
+            tweets.remove(tweets[i])
+            continue
+        
         userinput = raw_input("...")
         while not legal_input(userinput):
             userinput = raw_input("Unlawful input! Please re-introduce.")
