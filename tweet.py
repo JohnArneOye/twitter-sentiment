@@ -16,6 +16,7 @@ class Tweet(object):
         self.timestamp = timestamp
         self.subjectivity = None #0 if objective, 1 if subjective
         self.polarity = None #0 if negative sentiment, 1 if positive sentiment
+        self.processed_words = [] #dict for containing the stemmed and preprocessed words of the text body
         
         
     def to_tsv(self):
@@ -72,6 +73,7 @@ def to_tweet(text):
     """
     Convert a given .tsv formatted text line to a tweet object
     """
+    print "Turning into tweet: "+str(text)
     splits = text.split('\t')
     if len(splits)>3:
         tweet = Tweet(splits[0], splits[2], splits[3])

@@ -31,9 +31,12 @@ def user_annotation():
         try:
             print unicode(text)
         except UnicodeEncodeError:
-            print "Could not print tweet number "+str(i+1) +". Deleting tweet..."
-            tweets.remove(tweets[i])
-            continue
+            try:
+                print str(text)
+            except UnicodeEncodeError:
+                print "Could not print tweet number "+str(i+1) +". Deleting tweet..."
+                tweets.remove(tweets[i])
+                continue
         
         userinput = raw_input("...")
         while not legal_input(userinput):

@@ -7,6 +7,8 @@ import utils
 from calendar import main
 import tweet
 from numpy.core.numeric import correlate
+from tweet import Tweet
+import re
 
 def remove_retweets(tweets):
     """
@@ -23,12 +25,7 @@ def remove_duplicates_and_retweets(tweets):
     Removes tweets with dublicate text bodies.
     """
     textbodies = []
-    for tweet in tweets:
-        #Remove RTs
-        textbody = tweet.text
-        textbodies.append(textbody)
-        if textbody[:2] == "RT":
-            tweets.remove(tweet)
+    tweets = [tweet for tweet in tweets if not tweet.text[:2]=="RT"]
 
     #Return a set of the tweets, which will remove duplicates if __eq__ is properly implemented
     unique_tweets = []
@@ -47,11 +44,14 @@ def correct_words(tweets):
     """
     for tweet in tweets:
         textbody = tweet.text
-        for i in range(0, len(textbody)-1):
-            if textbody[i] in vowels and textbody[i]==textbody[i+1]:
-                textbody.remove(textbody[i])
-            if textbody[i] not in vowels and textbody[i]==textbody[i+1] and textbody[i]==textbody[i+2]:
-                textbody.remove(textbody[i])
+        
+        for vowel in vowels:
+            pattern = re.compile(vowel*3+"*")
+            textbody = pattern.sub(vowel, textbody)
+        for consonant in consonants:
+            pattern = re.compile(consonant*4+"*")
+            textbody = pattern.sub(consonant*2, textbody)
+
         tweet.text = textbody
     return tweets
 
@@ -61,20 +61,36 @@ def remove_specialchars(tweets):
     """
     for tweet in tweets:
         textbody = tweet.text
-        for char in textbody:
-            if char in special_chars_removal:
-                textbody = textbody.replace(char,'')
+        pattern = re.compile('(<|>|{|}|[|]|-|_|")')
+        textbody = pattern.sub("", textbody)
+        tweet.text = textbody
     return tweets
 
 def remove_hastags(tweets):
     """
-    Removes hashtag words, or replaces them with a class.
+    Removes hashtag words.
     """
+    for tweet in tweets:
+        textbody = ""
+        for word in tweet.text.split(" "):
+            if not word[0]=="#":
+                textbody = textbody+word+" "
+            else:
+                textbody = textbody + " "
+            tweet.text = textbody 
+    return tweets
+
+def replace_links(tweets):
+    """
+    Replaces any links in the tweets with a link class
+    """
+    for tweet in tweets:
+        link_replaced_text = ["<link>" if word[:4]=="http" or word[:3]=="www" else word for word in tweet.text.split(' ')]
     return tweets
 
 def remove_stopwords(tweets):
     """
-    Removes common stopwords.
+    Removes common stopwords based on a created stopword list.
     """
     return tweets
 
@@ -87,12 +103,25 @@ def lower_case(tweets):
         tweet.text = textbody.lower()
     return tweets
 
-def stemming(tweets):
+def stem(tweets):
     """
-    Stems the tweet texts
+    Stems and splits the tweet texts and stores them in the processed words list in the tweet object. 
     """
     return tweets
 
+def tokenize(tweets):
+    for tweet in tweets:
+        splits = tweet.text.split(" ")
+        tweet.processed_words = [word for word in splits if len(word)>1]
+    return tweets
+
+
+def pos_tag(tweets):
+    """
+    Uses the POS tagger interface to tag part-of-speech in all the tweets texts, stores it as dict in the tweet objects.
+    """
+    
+    return tweets
 
 def initial_preprocess_all_datasets():
     """
@@ -101,50 +130,71 @@ def initial_preprocess_all_datasets():
     This routine includes duplicate removal
     """
         
-#    for dataset in utils.datasets:
-    #Fetch from dataset
-    tweets = []
-    tweetlines = utils.get_dataset(utils.datasets[3])
-    for tweetline in tweetlines:
-        tweets.append(tweet.to_tweet(tweetline))
+    for i in range(0,len(utils.datasets)):
+        #Fetch from dataset
+        tweets = []
+        tweetlines = utils.get_dataset(utils.complete_datasets[i])
+        for tweetline in tweetlines:
+            tweets.append(tweet.to_tweet(tweetline))
+            
+        #Perform preprocessing
+        tweets = remove_duplicates_and_retweets(tweets)
         
-    #Perform preprocessing
-    tweets = remove_duplicates_and_retweets(tweets)
-    
-    #Store back to dataset
-    tweetlines = []
-    for t in tweets:
-        tweetlines.append(t.to_tsv())
-    utils.store_dataset(tweetlines, utils.datasets[3])
+        #Store back to dataset
+        tweetlines = []
+        for t in tweets:
+            tweetlines.append(t.to_tsv())
+        utils.store_dataset(tweetlines, utils.datasets[i])
       
 def classification_preprocess_all_datasets():
     """
     Preprocesses all datasets to be ready for classification task.
-    This will include stemming, word correction, lower-casing, hashtag removal.
+    This will include stemming, word correction, lower-casing, hashtag removal, special char removal.
     """
     
-    for dataset in utils.datasets:
-        tweetlines = utils.get_dataset(dataset)
+    for i in range(0,len(utils.datasets)):
+        tweetlines = utils.get_dataset(utils.datasets[i])
         tweets = []
         for line in tweetlines:
             tweets.append(tweet.to_tweet(line))
         
-        tweets = remove_retweets(tweets)
         tweets = lower_case(tweets)
         tweets = correct_words(tweets)
+        tweets = remove_hastags(tweets)
+        tweets = remove_specialchars(tweets)
+        tweets = stem(tweets)
+        tweets = tokenize(tweets)
         
         
-vowels = [u"a", u"e", u"i", u"o", u"u", u"y", u"æ", u"ø", u"å"]
+vowels = [u"a", u"e", u"i", u"o", u"u", u"y", u"\u00E6", u"\u00D8", u"\u00E5"]
+consonants = [u"b", u"c", u"d", u"f", u"g", u"h", u"j", u"k", u"l", u"m", u"n", u"p", u"q", u"r", u"s", u"t", u"v", u"w", u"x", u"z"]
 
 happy_emoticon_class = [u":)",u":D"]
 sad_emoticon_class = [u":(", u":'("]
 
-special_chars_removal = u"<>{}@[]-_"
+special_chars_removal = '(<|>|{|}|[|]|-|_|*|")'
 
 replacement_chars = {u"&": u"and",
                      u"+": u"and"}
         
 if __name__ == '__main__':
-    initial_preprocess_all_datasets()
+    #Testing
+    tweets = [Tweet("13:37", "johnarne", "Jeg < > haaater drittt #justinbieber"), Tweet("13:37", "johnarne", "Jeg eeelsker Justin Biebeeeer #love")]
+    for tweet in tweets:
+        print tweet
+    
+    tweets = lower_case(tweets)
+    tweets = correct_words(tweets)
+    tweets = remove_hastags(tweets)
+    tweets = remove_specialchars(tweets)
+    tweets = stem(tweets)
+    tweets = tokenize(tweets)
+    tweets = pos_tag(tweets)
+    
+    for tweet in tweets:
+        print tweet
+        print tweet.processed_words
+    
+    
     
 

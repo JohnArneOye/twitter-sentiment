@@ -41,6 +41,7 @@ def append_to_dataset(text, dataset):
     Appends text instances to dataset.
     """
 #    sys.stdout = codecs.getwriter('utf8')(sys.stdout)
+    print "Appending to dataset: "+str(dataset)
     f = open(dataset, "a")
     for t in text:
         try:
@@ -57,30 +58,30 @@ def store_dataset(text, dataset):
     """
     Stores the given sequence of strings to the given dataset as .tsv file.
     """
+    print "Storing to dataset: "+str(dataset)
     f = open(dataset, "w")
     for t in text:
 #        print unicode("Encoding: ")
 #        print unicode(t, 'cp866')
 #        encodedline = unicode(t, 'cp866').encode('utf8')
 #        print "Writing: "+encodedline
-        f.write(t.encode('utf8'))
+        try:
+            f.write(t.encode('utf8'))
+        except UnicodeDecodeError:
+            f.write(t)
     f.close()
     
 def encode_unicode():
     """
     Encodes all text files into utf8.
     """
-    f = open("data/random_dataset.tsv", "r")
+    f = open("complete_datasets/random_dataset.tsv", "r")
     text = f.readlines()
     f.close()
     f = open("encoding_attempt/random_dataset.tsv", "w")
     for line in text:
-        try:
-            f.write(line.encode('utf8')+"\n")
-        except UnicodeEncodeError:
-            print "Unicode Encoding Error: ", line.encode('utf8')
-        except UnicodeDecodeError:
-            print "Unicode Decoding Error: ", line.encode('utf8')
+        line = line.decode('ascii')
+        f.write(line.encode('utf8')+"\n")
     f.close()
     
 def select_dataset():
@@ -100,7 +101,7 @@ def get_dataset(dataset):
     lines = f.readlines()
     encodedlines = []
     for line in lines:
-        encodedlines.append(line.decode('utf8'))
+        encodedlines.append(line)
     f.close()
     return encodedlines
     
@@ -110,11 +111,9 @@ sentiments = ["negative",
               "positive"]
 
 complete_datasets = ["complete_datasets/random_dataset.tsv",
-                    "complete_datasets/objective_dataset.tsv", 
                     "complete_datasets/rosenborg_dataset.tsv",
                     "complete_datasets/erna_dataset.tsv"]
 
 datasets = ["data/random_dataset.tsv",
-            "data/objective_dataset.tsv", 
             "data/rosenborg_dataset.tsv",
             "data/erna_dataset.tsv"]    
