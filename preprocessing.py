@@ -9,6 +9,7 @@ import tweet
 from numpy.core.numeric import correlate
 from tweet import Tweet
 import re
+from tagger import Tagger
 
 def remove_retweets(tweets):
     """
@@ -120,7 +121,9 @@ def pos_tag(tweets):
     """
     Uses the POS tagger interface to tag part-of-speech in all the tweets texts, stores it as dict in the tweet objects.
     """
-    
+    for tweet in tweets:
+        tagger = Tagger(tweet.text)
+        tweet.tagged_words = tagger.tag_text()
     return tweets
 
 def initial_preprocess_all_datasets():
@@ -139,7 +142,7 @@ def initial_preprocess_all_datasets():
             
         #Perform preprocessing
         tweets = remove_duplicates_and_retweets(tweets)
-        
+        tweets = correct_words(tweets)
         #Store back to dataset
         tweetlines = []
         for t in tweets:
@@ -159,11 +162,11 @@ def classification_preprocess_all_datasets():
             tweets.append(tweet.to_tweet(line))
         
         tweets = lower_case(tweets)
-        tweets = correct_words(tweets)
         tweets = remove_hastags(tweets)
         tweets = remove_specialchars(tweets)
         tweets = stem(tweets)
         tweets = tokenize(tweets)
+        tweets = pos_tag(tweets)
         
         
 vowels = [u"a", u"e", u"i", u"o", u"u", u"y", u"\u00E6", u"\u00D8", u"\u00E5"]

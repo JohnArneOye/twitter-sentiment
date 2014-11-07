@@ -3,7 +3,6 @@ Created on 11. mars 2014
 
 @author: JohnArne
 '''
-from loader import Loader
 import argparse
 import utils
 import preprocessing
@@ -26,13 +25,11 @@ class Classifier(object):
         Trains the given model on the dataset.
         """
         self.model = None
-        trainset = Loader().get_train()
        
     def test(self):
         """
         Tests the given model on a partition of the dataset.
         """ 
-        testset = Loader().get_test()
         
     def classify(self, tweets):
         """

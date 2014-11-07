@@ -17,7 +17,7 @@ class Tweet(object):
         self.subjectivity = None #0 if objective, 1 if subjective
         self.polarity = None #0 if negative sentiment, 1 if positive sentiment
         self.processed_words = [] #dict for containing the stemmed and preprocessed words of the text body
-        
+        self.tagged_words = {}
         
     def to_tsv(self):
         """
