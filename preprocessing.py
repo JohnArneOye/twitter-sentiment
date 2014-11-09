@@ -10,6 +10,8 @@ from numpy.core.numeric import correlate
 from tweet import Tweet
 import re
 from tagger import Tagger
+from analyzer import Analyzer
+import string
 
 def remove_retweets(tweets):
     """
@@ -58,18 +60,18 @@ def correct_words(tweets):
 
 def remove_specialchars(tweets):
     """
-    Removes certain special characters.
+    Removes certain special characters. TODO need to make it so it removes ( and ) and ? and ! ....
     """
     for tweet in tweets:
         textbody = tweet.text
-        pattern = re.compile('(<|>|{|}|[|]|-|_|")')
-        textbody = pattern.sub("", textbody)
+        pattern = re.compile('(<|>|{|}|[|]|-|_|"|?|!|:)')
+        textbody = pattern.sub(" ", textbody)
         tweet.text = textbody
     return tweets
 
 def remove_hastags(tweets):
     """
-    Removes hashtag words.
+    Removes hashtag labels, whenever it encounters a hashtag, it increments the hashtag counter in the respective tweet object.
     """
     for tweet in tweets:
         textbody = ""
@@ -77,8 +79,21 @@ def remove_hastags(tweets):
             if not word[0]=="#":
                 textbody = textbody+word+" "
             else:
+                tweet.nrof_hashtags = tweet.nrof_hashtags + 1
                 textbody = textbody + " "
             tweet.text = textbody 
+    return tweets
+
+def count_emoticons(tweets):
+    """
+    Counts emoticons, whenever it encounters an emoticon, it increments the emoticon counter in the respective tweet object.
+    """    
+    for tweet in tweets:
+        textbody = tweet.text
+        tweet.nrof_happyemoticons = string.count(textbody, ":)") + string.count(textbody, ":D")
+        tweet.nrof_sademoticons = string.count(textbody, ":(") + string.count(textbody, ":'(")
+        for emoticon in emoticon_class:
+            tweet.text = string.replace(textbody, emoticon, "")
     return tweets
 
 def replace_links(tweets):
@@ -142,7 +157,7 @@ def initial_preprocess_all_datasets():
             
         #Perform preprocessing
         tweets = remove_duplicates_and_retweets(tweets)
-        tweets = correct_words(tweets)
+
         #Store back to dataset
         tweetlines = []
         for t in tweets:
@@ -163,17 +178,25 @@ def classification_preprocess_all_datasets():
         
         tweets = lower_case(tweets)
         tweets = remove_hastags(tweets)
+        tweets = count_emoticons(tweets)
         tweets = remove_specialchars(tweets)
+        tweets = replace_links(tweets)
+        tweets = correct_words(tweets)
         tweets = stem(tweets)
         tweets = tokenize(tweets)
         tweets = pos_tag(tweets)
+        print tweet
+#        analyzer = Analyzer(utils.datasets[i])
+#        stats = analyzer.analyze()
+#        print stats
+        
         
         
 vowels = [u"a", u"e", u"i", u"o", u"u", u"y", u"\u00E6", u"\u00D8", u"\u00E5"]
 consonants = [u"b", u"c", u"d", u"f", u"g", u"h", u"j", u"k", u"l", u"m", u"n", u"p", u"q", u"r", u"s", u"t", u"v", u"w", u"x", u"z"]
 
-happy_emoticon_class = [u":)",u":D"]
-sad_emoticon_class = [u":(", u":'("]
+emoticon_class = [u":)",u":D",u":(",u":'("]
+
 
 special_chars_removal = '(<|>|{|}|[|]|-|_|*|")'
 

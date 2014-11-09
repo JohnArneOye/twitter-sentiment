@@ -85,11 +85,11 @@ def encode_unicode():
     f.close()
     
 def select_dataset():
-    setnr = raw_input("Write to which dataset? 0: RandomSet 1: ObjectiveSet 2: RoseborgSet 3: ErnaSet ... ")
+    setnr = raw_input("Write to which dataset? 0: RandomSet 1: RoseborgSet 2: ErnaSet ... ")
     return datasets[int(setnr)]
 
 def select_complete_dataset():
-    setnr = raw_input("Write to which complete dataset? 0: RandomSet 1: ObjectiveSet 2: RoseborgSet 3: ErnaSet ... ")
+    setnr = raw_input("Write to which complete dataset? 0: RandomSet 1: RoseborgSet 2: ErnaSet ... ")
     return complete_datasets[int(setnr)]
 
 

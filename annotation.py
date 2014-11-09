@@ -27,13 +27,13 @@ def user_annotation():
     while i < len(tweets):
 #        tweets[i].text.encode('utf8')
         text = tweets[i].text
-        text.encode('utf8')
+        tweets[i].text = text.decode('utf8')
         try:
-            print unicode(text)
-        except UnicodeEncodeError:
+            print unicode(tweets[i])
+        except UnicodeDecodeError:
             try:
-                print str(text)
-            except UnicodeEncodeError:
+                print str(tweets[i])
+            except UnicodeDecodeError:
                 print "Could not print tweet number "+str(i+1) +". Deleting tweet..."
                 tweets.remove(tweets[i])
                 continue

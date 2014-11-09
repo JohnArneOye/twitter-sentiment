@@ -4,7 +4,7 @@ Created on 30. sep. 2014
 @author: JohnArne
 '''
 
-import requests
+#import requests
 
 class Tagger():
     """
