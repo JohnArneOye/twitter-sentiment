@@ -6,18 +6,68 @@ Created on 7. nov. 2014
 
 class Analyzer:
     
-    def __init__(self, dataset):
+    def __init__(self, dataset, tweets):
         self.dataset = dataset
+        self.tweets = tweets
         
     def analyze(self):
         """
         Performs an analysis of the given dataset.
         """
         print "Analyzing... "
-        stats = Stats()
+        stats = Stats(self.dataset)
         
+        stats.nrof_tweets = len(self.tweets)
+        users = []
+        for tweet in self.tweets:
+            stats.nrof_words = stats.nrof_words + tweet.word_count
+            users.append(tweet.user)
+            
+            if tweet.get_sentiment()=="negative":
+                stats.nrof_negativetweets = stats.nrof_negativetweets + 1
+                for phrase in tweet.tagged_words:
+                    for word in phrase:
+                        if word["pos"] =="ADJS" or word["pos"]=="ADJ":
+                            stats.nrof_adjectives = stats.nrof_adjectives + 1
+                            stats.nrof_adjectives_in_negative = stats.nrof_adjectives_in_negative + 1 
+                        if word["pos"] =="NNEUT" or word["pos"]=="NMASC" or word["pos"]=="NFEM" or word["pos"]=="N":
+                            stats.nrof_nouns =stats.nrof_nouns +1 
+                            if word["ner"]=="proper":
+                                stats.nrof_propernouns = stats.nrof_propernouns +1
+            elif tweet.get_sentiment()=="neutral":
+                stats.nrof_neutraltweets = stats.nrof_neutraltweets + 1
+                for phrase in tweet.tagged_words:
+                    for word in phrase:
+                        if word["pos"] =="ADJS" or word["pos"]=="ADJ":
+                            stats.nrof_adjectives = stats.nrof_adjectives + 1
+                            stats.nrof_adjectives_in_neutral = stats.nrof_adjectives_in_neutral + 1
+                        else:
+                            stats.nrof_neutraltweets_without_adjectives =stats.nrof_neutraltweets_without_adjectives +1 
+                        if word["pos"] =="NNEUT" or word["pos"]=="NMASC" or word["pos"]=="NFEM" or word["pos"]=="N":
+                            stats.nrof_nouns =stats.nrof_nouns +1 
+                            if word["ner"]=="proper":
+                                stats.nrof_propernouns = stats.nrof_propernouns +1
+            elif tweet.get_sentiment()=="positive":
+                stats.nrof_negativetweets = stats.nrof_positivetweets + 1
+                for phrase in tweet.tagged_words:
+                    for word in phrase:
+                        if word["pos"] =="ADJS" or word["pos"]=="ADJ":
+                            stats.nrof_adjectives = stats.nrof_adjectives + 1
+                            stats.nrof_adjectives_in_postive = stats.nrof_adjectives_in_postive + 1
+                        if word["pos"] =="NNEUT" or word["pos"]=="NMASC" or word["pos"]=="NFEM" or word["pos"]=="N":
+                            stats.nrof_nouns =stats.nrof_nouns +1 
+                            if word["ner"]=="proper":
+                                stats.nrof_propernouns = stats.nrof_propernouns +1
+
+                
+            stats.nrof_links = stats.nrof_links + len(tweet.links)
+            stats.nrof_users_mentioned = stats.nrof_users_mentioned + len(tweet.users_mentioned)
+            stats.nrof_emoticons = stats.nrof_emoticons + tweet.nrof_happyemoticons + tweet.nrof_sademoticons
+        
+        stats.nrof_users = len(set(users))
         stats.compute()
         stats.store()
+        stats.store_tex()
         return stats
     
     
@@ -26,16 +76,18 @@ class Stats:
     Contains and formats the statistics behind a dataset analysis.
     """
     
-    def __init__(self):
+    def __init__(self, dataset):
+        self.dataset = dataset
         self.nrof_tweets = 0
         self.nrof_words = 0
+        self.nrof_users = 0
         self.nrof_adjectives = 0
         self.nrof_nouns = 0
         self.nrof_propernouns = 0
         self.nrof_links = 0
+        self.nrof_users_mentioned = 0
         self.nrof_emoticons = 0
         
-        self.nrof_users = 0
         
         self.nrof_negativetweets = 0
         self.nrof_neutraltweets = 0
@@ -90,6 +142,44 @@ class Stats:
         file = open("stats/"+str(self.dataset)+"_stats.txt", 'w')
         file.write(self.__str__())
         
+        
+    def store_tex(self):
+        """
+        Stores the statistics of the given dataset as a .tex friendly text file.
+        """
+        file = open("stats_tex/"+str(self.dataset)+"_stats.txt", "w")
+        printstring = "\\begin{table} \n \\caption{Table of statistics for "+self.dataset+"}"
+        printstring = printstring + "\n \\begin{tabular}{|l|r|}"
+        printstring = printstring+ "\n Number of tweets &  "+str(self.nrof_tweets)
+        printstring = printstring+ "\n Words & "+str(self.nrof_words)
+        printstring = printstring+ "\n Users & "+str(self.nrof_users)
+        printstring = printstring+ "\n \\hline"
+        printstring = printstring+ "\n Adjectives & "+str(self.nrof_adjectives)
+        printstring = printstring+ "\n Nouns & "+str(self.nrof_nouns)
+        printstring = printstring+ "\n Proper nouns & "+str(self.nrof_propernouns)
+        printstring = printstring+ "\n Users mentioned & "+str(self.nrof_users_mentioned)
+        printstring = printstring+ "\n Links & "+str(self.nrof_users_mentioned)
+        printstring = printstring+ "\n Emoticons & = "+str(self.nrof_emoticons)
+        
+        printstring = printstring+ "\n \\hline"
+        printstring = printstring+ "\n Tweets per user & "+str(self.tweetsperuser)
+        printstring = printstring+ "\n Words per tweet & "+str(self.avg_words)
+        printstring = printstring+ "\n Adjectives per tweet & "+str(self.avg_adjectives)
+        printstring = printstring+ "\n Nouns per tweet & "+str(self.avg_nouns)
+        printstring = printstring+ "\n Proper nouns per tweet & "+str(self.avg_propernouns)
+        
+        printstring = printstring+ "\n \\hline"
+        printstring = printstring+ "\n Negative tweets  & "+str(self.nrof_negativetweets)+"("+str(self.prc_negativetweets)+"%)"
+        printstring = printstring+ "\n Neutral tweets & "+str(self.nrof_neutraltweets)+ "("+str(self.prc_neutraltweets)+"%)"
+        printstring = printstring+ "\n Positive tweets & "+str(self.nrof_positivetweets)+ "(" +str(self.prc_positivetweets)+"%)"
+        printstring = printstring+ "\n Average adjectives in negative tweets & "+str(self.avg_adjectives_in_negative)
+        printstring = printstring+ "\n Average adjectives in neutral tweets & "+str(self.avg_adjectives_in_neutral)
+        printstring = printstring+ "\n Average adjectives in positive tweets & "+str(self.avg_adjectives_in_postive)
+        printstring = printstring+ "\n Neutral tweets have no adjectives &"+str(self.nrof_neutraltweets_without_adjectives)
+        printstring = printstring+ "\n \\end{tabular} \n \\end{table} \n \\end{landscape}"
+        file.write(self.printstring)
+        
+        
     def __str__(self):
         printstring = "Statistics for "+str(self.dataset)+":" 
         
@@ -100,6 +190,8 @@ class Stats:
         printstring = printstring+ "\n Adjectives \t = "+str(self.nrof_adjectives)
         printstring = printstring+ "\n Nouns \t \t = "+str(self.nrof_nouns)
         printstring = printstring+ "\n Proper nouns \t = "+str(self.nrof_propernouns)
+        printstring = printstring+ "\n Users mentioned \t = "+str(self.nrof_users_mentioned)
+        printstring = printstring+ "\n Links \t \t = "+str(self.nrof_users_mentioned)
         printstring = printstring+ "\n Emoticons \t \t = "+str(self.nrof_emoticons)
         
         printstring = printstring+ "\n ----------------------------------------"

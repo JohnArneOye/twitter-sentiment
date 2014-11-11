@@ -21,7 +21,14 @@ class Tweet(object):
         self.nrof_happyemoticons = 0
         self.nrof_sademoticons = 0
         self.nrof_hashtags = 0
+        self.nrof_usersmentioned = 0
         self.exclamated = False
+        self.hashtags = []
+        self.links = []
+        self.users_mentioned = []
+        self.nrof_exclamations = 0
+        self.nrof_questionmarks = 0
+        self.word_count = 0
         
     def to_tsv(self):
         """
@@ -31,7 +38,10 @@ class Tweet(object):
         tvsline = ""
         sentiment = self.get_sentiment()
         if sentiment is not None:
-            tsvline = self.timestamp+"\t".encode('utf8')+sentiment+"\t"+self.user+"\t"+self.text
+            tsvline = self.timestamp
+            tsvline = tsvline+"\t"+sentiment
+            tsvline = tsvline+"\t"+self.user
+            tsvline = tsvline+"\t"+self.text
         else:
             tsvline = self.timestamp+"\t"+self.user+"\t"+self.text
         return tsvline
@@ -54,15 +64,31 @@ class Tweet(object):
         Sets the binary subjectivity and polarity variables of the tweet based on the
         passed textual representation of sentiment.
         """
-        if sentiment is "negative":
+        if sentiment=="negative":
             self.subjectivity = 1
             self.polarity = 0
-        elif sentiment is "neutral":
+        elif sentiment=="neutral":
             self.subjectivity = 0
             self.polarity = 0
-        elif sentiment is "positive":
+        elif sentiment=="positive":
             self.subjectivity = 1
             self.polarity = 1
+    
+    def stat_str(self):
+        """
+        Returns a string of all stats of the tweet.
+        """
+        statstring = "\n--------------\n"+" \n"+self.user+"\n"+self.text+"\n "
+        statstring = statstring + "Tagged words: "+str(self.tagged_words) + "\n"
+        statstring = statstring + "Sentiment " +str(self.get_sentiment()) + "\n"
+        statstring = statstring + "Hashtags: "+str(self.nrof_hashtags) + " "+str(self.hashtags) + "\n"
+        statstring = statstring + "Users: "+str(self.nrof_usersmentioned) + " "+str(self.users_mentioned) + "\n"
+        statstring = statstring + "Happy emoticons: "+str(self.nrof_happyemoticons) + "\n"
+        statstring = statstring + "Sad emoticons: "+str(self.nrof_sademoticons)+ "\n"
+        statstring = statstring + "Question marks: "+str(self.nrof_questionmarks)+ "\n"
+        statstring = statstring + "Exclamation marks: "+str(self.nrof_exclamations)+ "\n"
+        statstring = statstring + "\n--------------\n"
+        return statstring
     
     def __str__(self):
         """
@@ -78,10 +104,17 @@ def to_tweet(text):
     Convert a given .tsv formatted text line to a tweet object
     """
     splits = text.split('\t')
+    print "Creating tweet object: "
     if len(splits)>3:
+        print "Splitted into more than 3..."
+        for split in splits:
+            print split
         tweet = Tweet(splits[0], splits[2], splits[3])
         tweet.set_sentiment(splits[1])
     else:
+        print "Splitted into less than 3..."
+        for split in splits:
+            print split
         tweet = Tweet(splits[0], splits[1], splits[2])
     return tweet
     
