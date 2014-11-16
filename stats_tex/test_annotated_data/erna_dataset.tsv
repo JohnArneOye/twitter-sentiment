@@ -1,0 +1,31 @@
+\begin{table} 
+ \begin{center} 
+ \caption{Table of statistics for test_annotated_data/erna_dataset.tsv}
+ \begin{tabular}{|l|r|}
+ Number of tweets &  24\\
+ Words & 371\\
+ Users & 23\\
+ \hline
+ Adjectives & 38\\
+ Nouns & 112\\
+ Proper nouns & 28\\
+ Users mentioned & 37\\
+ Links & 37\\
+ Emoticons & = 0\\
+ \hline
+ Tweets per user & 1.04347826087\\
+ Words per tweet & 15.4583333333\\
+ Adjectives per tweet & 1.58333333333\\
+ Nouns per tweet & 4.66666666667\\
+ Proper nouns per tweet & 1.16666666667\\
+ \hline
+ Negative tweets  & 8(33.3333333333\%)\\
+ Neutral tweets & 8(33.3333333333\%)\\
+ Positive tweets & 8(33.3333333333\%)\\
+ Average adjectives in negative tweets & 1.625\\
+ Average adjectives in neutral tweets & 1.625\\
+ Average adjectives in positive tweets & 1.5\\
+ Neutral tweets have no adjectives &100\\
+ \end{tabular} 
+ \end{center} 
+ \end{table} 
