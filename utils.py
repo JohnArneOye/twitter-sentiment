@@ -9,6 +9,8 @@ import json
 from pprint import pprint
 import csv
 import codecs
+import pickle
+from numpy.oldnumeric.compat import pickle_array
 
 def load_to_tsv():
     """
@@ -104,7 +106,13 @@ def get_dataset(dataset):
         encodedlines.append(line)
     f.close()
     return encodedlines
-    
+
+def store_pickles(tweets, filepath):
+    """
+    Stores a given list of tweets as pickles.
+    """
+    output = open("tweet_pickles/"+filepath, 'wb')
+    pickle.dump(tweets, output)
     
 sentiments = ["negative",
               "neutral",
@@ -116,4 +124,8 @@ complete_datasets = ["complete_datasets/random_dataset.tsv",
 
 datasets = ["data/random_dataset.tsv",
             "data/rosenborg_dataset.tsv",
-            "data/erna_dataset.tsv"]    
+            "data/erna_dataset.tsv"]   
+
+annotated_datasets = ["johnarne_annotated_data/random_dataset.tsv",
+                      "johnarne_annotated_data/rosenborg_dataset.tsv",
+                      "johnarne_annotated_data/erna_dataset.tsv"] 

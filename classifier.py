@@ -47,7 +47,8 @@ class Classifier(object):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description="Commands for classification")
-    parser.add_argument("-pre", action="store_true", dest="preprocess", default=False, help="Preprocess text files.")
+    parser.add_argument("-pre1", action="store_true", dest="preprocess1", default=False, help="Perform first round preprocessing: Duplicate and retweet removal")
+    parser.add_argument("-pre2", action="store_true", dest="preprocess2", default=False, help="Perform second round preprocessing: Text cleanup operations, feature extractions, POS-tagging.")
     parser.add_argument("-unc", action="store_true", dest="encodeunicode", default=False, help="Translate given text file to unicode.")
     parser.add_argument("-q", action="store", dest="tweet_query", default=None, help="Get tweets using the given query.")
 #    parser.add_argument("-nb", action="append", dest="naive_bayes_values", default=[], help="Perform a naive bayes classification with the given values.")
@@ -58,8 +59,10 @@ if __name__ == '__main__':
     parsameters = parser.parse_args()
     if parsameters.encodeunicode:
         utils.encode_unicode()
-    if parsameters.preprocess:
+    if parsameters.preprocess1:
         preprocessing.initial_preprocess_all_datasets()
+    if parsameters.preprocess2:
+        preprocessing.classification_preprocess_all_datasets()
     if parsameters.tweet_query:
         retriever = TweetRetriever(parsameters.tweet_query)
         retriever.retrieve_for_dataset()

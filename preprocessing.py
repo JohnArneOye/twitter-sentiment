@@ -67,6 +67,9 @@ def remove_specialchars(tweets):
         pattern = re.compile('({|}|[|]|-|:|"|@|\*|\)|\()')
         textbody = pattern.sub("", textbody)
         textbody = string.replace(textbody, "_", " ")
+#        textbody = string.replace(textbody, "?", "")
+#        textbody = string.replace(textbody, ".", "")
+#        textbody = string.replace(textbody, "!", "")
         tweet.text = textbody
     return tweets
 
@@ -77,6 +80,7 @@ def remove_hastags_and_users(tweets):
     for tweet in tweets:
         textbody = ""
         for word in tweet.text.split(" "):
+            if len(word)<1:continue
             tweet.word_count = tweet.word_count +1 
             if not word[0]=="#" and not word[0]=="@":
                 textbody = textbody+word+" "
@@ -106,6 +110,7 @@ def count_emoticons(tweets):
 def count_exclamations(tweets):
     """
     Counts exclamation marks and question marks, stores their number for future feature use. Then removes all sentence stops.
+    Possibly handle / in a separate manner; keep only one of the words...?
     """
     for tweet in tweets:
         textbody = tweet.text
@@ -161,10 +166,21 @@ def pos_tag(tweets):
     Uses the POS tagger interface to tag part-of-speech in all the tweets texts, stores it as dict in the tweet objects.
     """
     print "Tagging..."
+    untagged_texts = []
     for tweet in tweets:
         tagger = Tagger()
         textbody = tweet.text
-        tweet.tagged_words = tagger.tag_text(textbody)
+        for phrase in re.split("\.|!|\?", textbody):
+            if len(phrase)<2: continue
+            phrase = string.replace(phrase, "?", "")
+            phrase = string.replace(phrase, "!", "")
+            phrase = string.replace(phrase, ".", "")
+            tags = tagger.tag_text(phrase)
+            if tags!=None:
+                tweet.tagged_words.append(tags)
+    print "Untagged texts: "
+    for text in untagged_texts:
+        print text
     print "Tagging done."
     return tweets
 
@@ -197,11 +213,12 @@ def classification_preprocess_all_datasets():
     This will include stemming, word correction, lower-casing, hashtag removal, special char removal.
     """
     
-    for i in range(0,len(utils.datasets)):
-        tweetlines = utils.get_dataset(utils.datasets[i])
+    for i in range(0,len(utils.annotated_datasets)):
+        tweetlines = utils.get_dataset(utils.annotated_datasets[i])
         tweets = []
         for line in tweetlines:
-            tweets.append(tweet.to_tweet(line))
+            if len(line)>1:
+                tweets.append(tweet.to_tweet(line))
         
 #        tweets = lower_case(tweets)
         tweets = remove_hastags_and_users(tweets)
@@ -213,11 +230,15 @@ def classification_preprocess_all_datasets():
         tweets = tokenize(tweets)
         tweets = pos_tag(tweets)
         tweets = count_exclamations(tweets)
-        print tweet
-#        analyzer = Analyzer(utils.datasets[i])
-#        stats = analyzer.analyze()
-#        print stats
+        for t in tweets:
+            print t.stat_str()
         
+        analyzer = Analyzer(utils.annotated_datasets[i], tweets)
+        stats = analyzer.analyze()
+        print stats
+        #store tweets in pickles...
+        print "Storing pickles..."
+        utils.store_pickles(tweets, utils.annotated_datasets[i][24:len(utils.annotated_datasets[i])-4])
         
         
 vowels = [u"a", u"e", u"i", u"o", u"u", u"y", u"\u00E6", u"\u00D8", u"\u00E5"]
@@ -242,7 +263,8 @@ if __name__ == '__main__':
     tweetlines = utils.get_dataset("test_annotated_data/erna_dataset.tsv")
     tweets = []
     for line in tweetlines:
-        tweets.append(tweet.to_tweet(line))
+        if len(line)>1:
+            tweets.append(tweet.to_tweet(line))
         
     
 #    tweets = lower_case(tweets)
