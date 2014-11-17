@@ -76,8 +76,11 @@ class Tweet(object):
     
     def stat_str(self):
         """
-        Returns a string of all stats of the tweet.
+        Returns a string of all stats of the tweet. BROKEN, unicode errors all around
         """
+#        try:
+#            statstring = "\n--------------\n"+" \n"+self.user+"\n"+unicode(self.text)+"\n "
+#        except UnicodeDecodeError:
         statstring = "\n--------------\n"+" \n"+self.user+"\n"+self.text+"\n "
         statstring = statstring + "Tagged words: "+str(self.tagged_words) + "\n"
         statstring = statstring + "Sentiment " +str(self.get_sentiment()) + "\n"

@@ -10,7 +10,6 @@ from pprint import pprint
 import csv
 import codecs
 import pickle
-from numpy.oldnumeric.compat import pickle_array
 
 def load_to_tsv():
     """

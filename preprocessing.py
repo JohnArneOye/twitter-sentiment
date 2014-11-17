@@ -50,10 +50,16 @@ def correct_words(tweets):
         
         for vowel in vowels:
             pattern = re.compile(vowel*3+"*")
-            textbody = pattern.sub(vowel, textbody)
+            try:
+                textbody = pattern.sub(vowel, textbody)
+            except UnicodeDecodeError:
+                textbody = pattern.sub(vowel, textbody.decode('utf8'))
         for consonant in consonants:
             pattern = re.compile(consonant+consonant+consonant+consonant+"*")
-            textbody = pattern.sub(consonant*2, textbody)
+            try:
+                textbody = pattern.sub(consonant*2, textbody)
+            except UnicodeDecodeError:
+                textbody = pattern.sub(consonant*2, textbody.decode('utf8'))
 
         tweet.text = textbody
     return tweets
@@ -65,8 +71,14 @@ def remove_specialchars(tweets):
     for tweet in tweets:
         textbody = tweet.text
         pattern = re.compile('({|}|[|]|-|:|"|@|\*|\)|\()')
-        textbody = pattern.sub("", textbody)
-        textbody = string.replace(textbody, "_", " ")
+        try:
+            textbody = pattern.sub("", textbody)
+        except UnicodeDecodeError:
+            textbody = pattern.sub("", textbody.decode('utf8'))
+        try:
+            textbody = string.replace(textbody, "_", " ")
+        except UnicodeEncodeError:
+            textbody = string.replace(textbody.decode('utf8'), "_", " ")
 #        textbody = string.replace(textbody, "?", "")
 #        textbody = string.replace(textbody, ".", "")
 #        textbody = string.replace(textbody, "!", "")
@@ -184,6 +196,13 @@ def pos_tag(tweets):
     print "Tagging done."
     return tweets
 
+def re_analyze():
+    """
+    Unpickles preprocessed tweets and performs reanalyzis of these, then stores stats.
+    """
+    
+    return False
+
 def initial_preprocess_all_datasets():
     """
     Runs first preprocessing iteration on all datasets.
@@ -230,9 +249,7 @@ def classification_preprocess_all_datasets():
         tweets = tokenize(tweets)
         tweets = pos_tag(tweets)
         tweets = count_exclamations(tweets)
-        for t in tweets:
-            print t.stat_str()
-        
+
         analyzer = Analyzer(utils.annotated_datasets[i], tweets)
         stats = analyzer.analyze()
         print stats

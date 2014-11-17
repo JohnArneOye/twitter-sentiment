@@ -26,7 +26,7 @@ class Tagger():
         """
         
 #        print "Tagging: "+unicode(text.decode('utf8'))
-        par = {"text": str(text), "raw": "raw", "format": "json"}
+        par = {"text": text, "raw": "raw", "format": "json"}
         r = requests.post(self.url, data=par)
         tagged_words = {}
         try:

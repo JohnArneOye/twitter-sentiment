@@ -54,6 +54,7 @@ if __name__ == '__main__':
 #    parser.add_argument("-nb", action="append", dest="naive_bayes_values", default=[], help="Perform a naive bayes classification with the given values.")
     parser.add_argument("-nb", action="store_true", dest="naivebayes", default=False, help="Perform a default naive bayes classification.")
     parser.add_argument("-a", action="store_true", dest="annotate", default=False, help="Start annotation sequence.")
+    parser.add_argument("-analyze", action="store_true", dest="analyze", default=False, help="Perform a re-analysis of the pickled datasets. This analysis is also performed as part of the second preprocessing.")
     
     
     parsameters = parser.parse_args()
@@ -71,6 +72,8 @@ if __name__ == '__main__':
         classifier = Classifier(models.nb.NB())
     if parsameters.annotate:
         annotation.user_annotation()
+    if parsameters.analyze:
+        preprocessing.re_analyze()
         
     
     
