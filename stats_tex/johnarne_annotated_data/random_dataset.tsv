@@ -1,0 +1,31 @@
+\begin{table} 
+ \begin{center} 
+ \caption{Table of statistics for johnarne_annotated_data/random_dataset.tsv}
+ \begin{tabular}{|l|r|}
+ Number of tweets &  606\\
+ Words & 9937\\
+ Users & 532\\
+ \hline
+ Adjectives & 888\\
+ Nouns & 2246\\
+ Proper nouns & 365\\
+ Users mentioned & 406\\
+ Links & 406\\
+ Emoticons & = 22\\
+ \hline
+ Tweets per user & 1.13909774436\\
+ Words per tweet & 16.397689769\\
+ Adjectives per tweet & 1.46534653465\\
+ Nouns per tweet & 3.70627062706\\
+ Proper nouns per tweet & 0.602310231023\\
+ \hline
+ Negative tweets  & 80(13.201320132\%)\\
+ Neutral tweets & 403(66.501650165\%)\\
+ Positive tweets & 123(20.297029703\%)\\
+ Average adjectives in negative tweets & 1.7125\\
+ Average adjectives in neutral tweets & 1.28535980149\\
+ Average adjectives in positive tweets & 1.89430894309\\
+ Neutral tweets have no adjectives &5155\\
+ \end{tabular} 
+ \end{center} 
+ \end{table} 

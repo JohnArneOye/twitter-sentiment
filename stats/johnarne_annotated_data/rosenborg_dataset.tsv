@@ -1,0 +1,25 @@
+Statistics for johnarne_annotated_data/rosenborg_dataset.tsv:
+ ----------------------------------------
+ Number of tweets 	 = 579
+ Words 	 	 	 	 = 8842
+ Users 	 	 	 	 = 320
+ Adjectives 	 	 = 595
+ Nouns 	 	 	 	 = 1666
+ Proper nouns 	 	 = 437
+ Users mentioned 	 = 154
+ Links 	 	 	 	 = 154
+ Emoticons 	 	 	 = 8
+ ----------------------------------------
+ 1.809375 tweets per user
+ 15.2711571675 words per tweet
+ 1.02763385147 adjectives per tweet
+ 2.87737478411 nouns per tweet
+ 0.754749568221 proper nouns per tweet
+ ----------------------------------------
+ 85 negative tweets:  14.6804835924%
+ 349 neutral  tweets:  60.2763385147%
+ 145 positive tweets:  25.0431778929%
+ 1.51764705882 average adjectives in negative tweets 
+ 0.724928366762 average adjectives in neutral tweets 
+ 1.46896551724 average adjectives in positive tweets 
+ 4367 neutral tweets have no adjectives
