@@ -41,3 +41,9 @@ class TweetRetriever(object):
         tweets = []
         return tweets
         
+    def retrieve_stream(self):
+        """
+        Fetch tweets from the twitter stream.
+        """
+        tweets =[]
+        return tweets

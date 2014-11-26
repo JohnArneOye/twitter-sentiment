@@ -22,7 +22,7 @@ def plot_temporal_sentiment(data):
     # You typically want your plot to be ~1.33x wider than tall. This plot is a rare  
     # exception because of the number of lines being plotted on it.  
     # Common sizes: (10, 7.5) and (12, 9)  
-    f = plt.figure(figsize=(12, 14))  
+    f = plt.figure(figsize=(6, 7))  
       
     # Remove the plot frame lines. They are unnecessary chartjunk.  
     ax = plt.subplot(111)  
@@ -122,9 +122,9 @@ def plot_temporal_sentiment(data):
     # bbox_inches="tight" removes all the extra whitespace on the edges of your plot.  
     plt.savefig("temporal_sentiments.png", bbox_inches="tight");  
     
-def plot_something_else(data):
+def plot_dataset_stats(data):
     """
-    Plots something else using the given data.
+    Plots histograms of the dataset statistics using the given data.
     """
 
     

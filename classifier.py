@@ -9,6 +9,7 @@ import preprocessing
 import retriever_tweepy
 import models
 import annotation
+import easygui_gui
 from retriever_tweepy import TweetRetriever
 
 class Classifier(object):
@@ -55,7 +56,7 @@ if __name__ == '__main__':
     parser.add_argument("-nb", action="store_true", dest="naivebayes", default=False, help="Perform a default naive bayes classification.")
     parser.add_argument("-a", action="store_true", dest="annotate", default=False, help="Start annotation sequence.")
     parser.add_argument("-analyze", action="store_true", dest="analyze", default=False, help="Perform a re-analysis of the pickled datasets. This analysis is also performed as part of the second preprocessing.")
-    
+    parser.add_argument("-run", action="store_true", dest="run_easygui", default=False, help="Run classification routine with graphical interface.")
     
     parsameters = parser.parse_args()
     if parsameters.encodeunicode:
@@ -74,6 +75,8 @@ if __name__ == '__main__':
         annotation.user_annotation()
     if parsameters.analyze:
         preprocessing.re_analyze()
+    if parsameters.run_easygui:
+        easygui_gui.show_windows()
         
     
     
