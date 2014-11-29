@@ -4,7 +4,8 @@ Created on 19. mars 2014
 @author: JohnArne
 '''
 from model import Model
-    
+from sklearn.naive_bayes import MultinomialNB 
+
 
 class NB(Model):
     """
@@ -12,11 +13,10 @@ class NB(Model):
     """
     
     def __init__(self):
-        self.text = []
-        self.word_freq = []
-    
-    def create_bagofwords(self):
-        self.bagofwords = []
+        self.classifier = MultinomialNB()
+        super(NB, self).__init__()
+
         
-    
-        
+if __name__ == '__main__':
+    nb = NB()
+    print "something"

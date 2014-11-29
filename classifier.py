@@ -10,6 +10,7 @@ import retriever_tweepy
 import models
 import annotation
 import easygui_gui
+import feature_extraction
 from retriever_tweepy import TweetRetriever
 
 class Classifier(object):
@@ -25,7 +26,11 @@ class Classifier(object):
         """
         Trains the given model on the dataset.
         """
-        self.model = None
+        dataset = "erna_dataset"
+        tweets = utils.get_pickles(dataset)
+        set = feature_extraction.get_feature_set_A(tweets)
+        self.model.set_feature_set(set)
+        self.model.train_on_feature_set()
        
     def test(self):
         """

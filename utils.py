@@ -113,6 +113,14 @@ def store_pickles(tweets, filepath):
     output = open("tweet_pickles/"+filepath, 'wb')
     pickle.dump(tweets, output)
     
+def get_pickles(dataset):
+    """
+    Gets the stored tweet pickles.
+    """
+    tweets = []
+    return tweets
+    
+    
 sentiments = ["negative",
               "neutral",
               "positive"]

@@ -3,6 +3,7 @@ Handles plotting of different visualizations of data.
 @author: JohnArne
 '''
 import matplotlib.pyplot as plt
+import random
 
 def plot_temporal_sentiment(data):
     """
@@ -39,7 +40,7 @@ def plot_temporal_sentiment(data):
     # Limit the range of the plot to only where the data is.  
     # Avoid unnecessary whitespace.  
     plt.ylim(0, 90)  
-    plt.xlim(1, 60)  
+    plt.xlim(0, 60)  
       
     # Make sure your axis ticks are large enough to be easily read.  
     # You don't want your viewers squinting to read your plot.  
@@ -58,7 +59,7 @@ def plot_temporal_sentiment(data):
       
     # Now that the plot is prepared, it's time to actually plot the data!  
     # Note that I plotted the majors in order of the highest % in the final year.  
-    majors = ['Random', 'Erna Solberg', 'Rosenborg']  
+    majors = ['No target', 'Erna Solberg', 'Rosenborg']  
       
     for rank, column in enumerate(majors):  
         # Plot each line separately with its own color, using the Tableau 20  
@@ -129,7 +130,10 @@ def plot_dataset_stats(data):
 
     
 if __name__ == '__main__':
-    data = {"Erna Solberg": [[1,2,3,12,15,22,32,60],[10,10,20,10,10,10,10,90]],
-            "Rosenborg": [[1,2,3,4,12,23,36,60],[10,20,30,20,20,10,5,86]],
-            "Random": [[1,2,3,12,21,25,35,60],[20,10,5,6,10,20,30,45]]}
+    data = {"Erna Solberg": [range(0,100),[random.randint(20,50) for _ in range(0,100)]],
+            "Rosenborg": [range(0,100),[random.randint(40,60) for _ in range(0,100)]],
+            "No target": [range(0,100),[random.randint(30,40) for _ in range(0,100)]]}
+    for key in data.keys():
+        print len(data[key][0])
+        print len(data[key][1])
     plot_temporal_sentiment(data)
