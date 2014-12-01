@@ -19,4 +19,5 @@ class NB(Model):
         
 if __name__ == '__main__':
     nb = NB()
+    nb.set_feature_set()
     print "something"

@@ -117,9 +117,23 @@ def get_pickles(dataset):
     """
     Gets the stored tweet pickles.
     """
-    tweets = []
+    setnr = int(raw_input("Get which pickle set? 0: RandomSet 1: RoseborgSet 2: ErnaSet 3: All three ..."))
+    if setnr is 3:
+        #fetch all sets and append them together
+        tweets = []
+        for pickleset in pickles:
+            tweets = tweets + pickle.load(open(pickleset, 'rb'))
+        return tweets
+    else:
+        tweets = pickle.load(open(pickles[setnr], 'rb'))
+        return tweets
+    
     return tweets
     
+    
+pickles = ['tweet_pickles/random_dataset',
+           'tweet_pickles/rosenborg_dataset',
+           'tweet_pickles/erna_dataset']
     
 sentiments = ["negative",
               "neutral",
