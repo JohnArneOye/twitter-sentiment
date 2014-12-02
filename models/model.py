@@ -5,30 +5,35 @@ Created on 15. mai 2014
 '''
 
 import logging
-import feature_extraction
+import features
 from sklearn.pipeline import Pipeline
 from sklearn.feature_extraction.text import TfidfVectorizer, TfidfTransformer
 from sklearn.cross_validation import train_test_split, StratifiedKFold
-from feature_extraction.text import CountVectorizer
-
+from sklearn.feature_extraction.text import CountVectorizer
+from sklearn.grid_search import GridSearchCV
 
 class Model(object):
     """
     Class for abstracting the different classification models.
     """
     
-    def __init__(self, tweets, featureset):
+    def __init__(self, tweets):
         self.stats = []
         self.feature_set = []
         self.tweets = tweets
         
-    def train_on_feature_set(self, tweets, cross_validate = False, use_tfidf = False):
+    def train_on_feature_set(self, cross_validate=True, use_tfidf=True):
         """
         Performs training with the given model using the given feature set
         """
         #Establish document text feature vectors
+        print "Vectorizing"
         count_vect = CountVectorizer()
-        tf_transformer = TfidfTransformer()
+        train_counts = count_vect.fit_transform([t.text for t in self.tweets])
+        print "Shape ", train_counts.shape
+        tf_transformer = TfidfTransformer(use_idf=False).fit(train_counts)
+        train_counts_tf = tf_transformer.transform(train_counts)
+        print "Shape tf ", train_counts_tf.shape
         
         #Crossvalidation
         cross_validation = StratifiedKFold()
@@ -40,7 +45,14 @@ class Model(object):
                                     ('tf_idf', tf_transformer),
                                     ('clf', self.classifier)])
         
-        text_classifier = text_classifier.fit()
+        #Perform grid search
+        self.grid = GridSearchCV(text_classifier, options={}, cv=cross_validation, refit=True, n_jobs=-1,verbose=1)
+        print "Training new classifier of instance "+str(self.classifier.__class__.__name__)
+        self.grid.fit()
+        
+        self.best_classifier = self.grid
+        
+        
 
     def classify(self, tweet):
         """
@@ -51,11 +63,11 @@ class Model(object):
         return sentiment
 
     
-    def set_feature_set(self):
+    def set_feature_set(self, featureset):
         """
         Extracts and stores the given feature set for classification
         """
         
-        self.feature_set = feature_extraction.get_feature_set(self.tweets, self.featureset)
+        self.feature_set = features.get_feature_set(self.tweets, featureset)
         
         

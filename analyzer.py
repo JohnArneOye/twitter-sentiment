@@ -47,10 +47,7 @@ class Analyzer:
                         if "pos" not in word.keys(): continue
                         if word["pos"] =="ADJS" or word["pos"]=="ADJ":
                             stats.nrof_adjectives = stats.nrof_adjectives + 1
-                            stats.nrof_adjectives_in_neutral = stats.nrof_adjectives_in_neutral + 1
-                        else:
-                            #TODO: WRONG LOOOOOOL
-                            stats.nrof_neutraltweets_without_adjectives =stats.nrof_neutraltweets_without_adjectives +1 
+                            stats.nrof_adjectives_in_neutral = stats.nrof_adjectives_in_neutral + 1 
                         if word["pos"] =="NNEUT" or word["pos"]=="NMASC" or word["pos"]=="NFEM" or word["pos"]=="N":
                             stats.nrof_nouns =stats.nrof_nouns +1 
                             try:
@@ -85,6 +82,18 @@ class Analyzer:
         stats.store_tex()
         return stats
     
+    def pos_tag_analyze(self):
+        """
+        Perform a comparison of POS tags between different sentiment classes in the dataset.
+        """
+        
+    
+    def sentiment_class_analysis(self, dataset2, tweets2, dataset3, tweets3):
+        """
+        Compare all three datasets with each other, with respect to their sentiment annotations.
+        """
+        
+        
     
 class Stats:
     """
@@ -112,7 +121,6 @@ class Stats:
         self.nrof_adjectives_in_neutral = 0
         self.nrof_adjectives_in_postive = 0
 
-        self.nrof_neutraltweets_without_adjectives = 0
         
         #computational variables
         
@@ -130,6 +138,9 @@ class Stats:
         self.avg_adjectives_in_negative = 0.0
         self.avg_adjectives_in_neutral = 0.0
         self.avg_adjectives_in_positive = 0.0
+        
+        #For POS tag analysis
+        
         
     def compute(self):
         """
@@ -192,7 +203,6 @@ class Stats:
         printstring = printstring+ "\n Average adjectives in negative tweets & "+str(self.avg_adjectives_in_negative) + "\\\\"
         printstring = printstring+ "\n Average adjectives in neutral tweets & "+str(self.avg_adjectives_in_neutral) + "\\\\"
         printstring = printstring+ "\n Average adjectives in positive tweets & "+str(self.avg_adjectives_in_positive) + "\\\\"
-        printstring = printstring+ "\n Neutral tweets have no adjectives &"+str(self.nrof_neutraltweets_without_adjectives) + "\\\\"
         printstring = printstring+ "\n \\end{tabular} \n \\end{center} \n \\end{table} \n"
         file.write(printstring)
         file.close()
@@ -235,7 +245,6 @@ class Stats:
         printstring = printstring+ "\n "+str(self.avg_adjectives_in_negative)+ " average adjectives in negative tweets "
         printstring = printstring+ "\n "+str(self.avg_adjectives_in_neutral)+ " average adjectives in neutral tweets "
         printstring = printstring+ "\n "+str(self.avg_adjectives_in_positive)+ " average adjectives in positive tweets "
-        printstring = printstring+ "\n "+str(self.nrof_neutraltweets_without_adjectives)+ " neutral tweets have no adjectives"
         return printstring
     
     

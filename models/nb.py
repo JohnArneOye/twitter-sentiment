@@ -12,12 +12,8 @@ class NB(Model):
     Class implementing the Multinomial Naive Bayes learning method.
     """
     
-    def __init__(self):
+    def __init__(self, train_set):
         self.classifier = MultinomialNB()
-        super(NB, self).__init__()
+        super(NB, self).__init__(train_set)
 
         
-if __name__ == '__main__':
-    nb = NB()
-    nb.set_feature_set()
-    print "something"
