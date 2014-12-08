@@ -203,6 +203,7 @@ def re_analyze():
     
     return False
 
+
 def initial_preprocess_all_datasets():
     """
     Runs first preprocessing iteration on all datasets.
@@ -257,7 +258,23 @@ def classification_preprocess_all_datasets():
         print "Storing pickles..."
         utils.store_pickles(tweets, utils.annotated_datasets[i][24:len(utils.annotated_datasets[i])-4])
         
-        
+def preprocess_tweet(tweet):
+    """
+    Preprocess a single tweet
+    """
+    tweets = [tweet]   
+    tweets = remove_hastags_and_users(tweets)
+    tweets = count_emoticons(tweets)
+    tweets = replace_links(tweets)
+    tweets = remove_specialchars(tweets)
+    tweets = correct_words(tweets)
+    tweets = stem(tweets)
+    tweets = tokenize(tweets)
+    tweets = pos_tag(tweets)
+    tweets = count_exclamations(tweets)
+    return tweets[0]
+
+     
 vowels = [u"a", u"e", u"i", u"o", u"u", u"y", u"\u00E6", u"\u00D8", u"\u00E5"]
 consonants = [u"b", u"c", u"d", u"f", u"g", u"h", u"j", u"k", u"l", u"m", u"n", u"p", u"q", u"r", u"s", u"t", u"v", u"w", u"x", u"z"]
 

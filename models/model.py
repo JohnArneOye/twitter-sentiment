@@ -56,7 +56,7 @@ class Model(object):
 
     def classify(self, tweet):
         """
-        Returns the sentiment given a document(tweet) along with its features.
+        Returns the sentiment given a document as a tweet object along with its features.
         """
 
         sentiment = 0

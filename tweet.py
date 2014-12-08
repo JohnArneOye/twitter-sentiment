@@ -3,8 +3,6 @@ Created on 30. sep. 2014
 
 @author: JohnArne
 '''
-from sqlite3.dbapi2 import Timestamp
-
 class Tweet(object):
     """
     Class for wrapping tweet information.
@@ -29,6 +27,7 @@ class Tweet(object):
         self.nrof_exclamations = 0
         self.nrof_questionmarks = 0
         self.word_count = 0
+        self.words_with_sentimentvalues={}
         
     def to_tsv(self):
         """

@@ -7,10 +7,13 @@ import argparse
 import utils
 import preprocessing
 import retriever_tweepy
-import models
+from models.nb import NB
+from models.svm import SVM
+from models.me import ME
+from models import features
+
 import annotation
 import easygui_gui
-import feature_extraction
 from retriever_tweepy import TweetRetriever
 
 class Classifier(object):
@@ -28,8 +31,7 @@ class Classifier(object):
         """
         dataset = "erna_dataset"
         tweets = utils.get_pickles(dataset)
-        set = feature_extraction.get_feature_set_A(tweets)
-        self.model.set_feature_set(set)
+        self.model.set_feature_set('A')
         self.model.train_on_feature_set()
        
     def test(self):
@@ -75,7 +77,7 @@ if __name__ == '__main__':
         retriever.retrieve_for_dataset()
     if parsameters.naivebayes:
         #perform a naive bayes classification
-        classifier = Classifier(models.nb.NB())
+        classifier = Classifier(NB())
     if parsameters.annotate:
         annotation.user_annotation()
     if parsameters.analyze:
