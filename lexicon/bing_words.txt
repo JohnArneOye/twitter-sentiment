@@ -1,0 +1,6 @@
+god	N
+glad	ADJ
+flink	ADJ
+hårkam	N
+bamse	N
+godt	ADV
