@@ -129,7 +129,40 @@ def get_pickles():
         return tweets
     
     return tweets
+
+def split_train_and_test(tweets):
+    """
+    Splits the given tweet set into a training set and a testing set.
+    """
+    split_pos = int(len(tweets)*0.9)
+    train_tweets = tweets[0:split_pos]
+    test_tweets = tweets[split_pos:len(tweets)]
+    return train_tweets, test_tweets
+
+def make_polarity_set_and_target(tweets):
+    """
+    Removes objective tweets and returns a completely subjective dataset, along with the positive or negative targets.
+    """
+    pol_tweets = [t for t in tweets if t.subjectivity==0]
+    pol_targets = [t.get_sentiment() for t in tweets if t.subjectivity==0]
+    return pol_tweets, pol_targets
     
+def make_subjectivity_set_and_target(tweets):
+    """
+    Returns a dataset for subjectivity classification, along with the targets for classification
+    """
+    sub_tweets =tweets
+    sub_targets = ['objective' if t.subjectivity==0 else 'subjective' for t in tweets]
+    return sub_tweets, sub_targets
+    
+def store_model(model):
+    """
+    Stores the given dict as a pickle in the stored estimators folder.
+    """
+    out = open("stored_estimators/"+model['name'], 'wb')
+    pickle.dump(model, out)
+    out.close()
+    return model
     
 pickles = ['tweet_pickles/random_dataset',
            'tweet_pickles/rosenborg_dataset',
@@ -150,3 +183,8 @@ datasets = ["data/random_dataset.tsv",
 annotated_datasets = ["johnarne_annotated_data/random_dataset.tsv",
                       "johnarne_annotated_data/rosenborg_dataset.tsv",
                       "johnarne_annotated_data/erna_dataset.tsv"] 
+
+if __name__ == '__main__':
+    train, test = split_train_and_test(get_pickles())
+    
+    print len(train)," ", len(test)

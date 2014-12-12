@@ -122,6 +122,13 @@ def plot_temporal_sentiment(data):
     # Just change the file extension in this call.  
     # bbox_inches="tight" removes all the extra whitespace on the edges of your plot.  
     plt.savefig("temporal_sentiments.png", bbox_inches="tight");  
+   
+def plot_performance_histogram(data):
+    """
+    Plots the performance of different algorithms.
+    """
+    something = ""
+    return something
     
 def plot_dataset_stats(data):
     """
@@ -130,10 +137,12 @@ def plot_dataset_stats(data):
 
     
 if __name__ == '__main__':
-    data = {"Erna Solberg": [range(0,100),[random.randint(20,50) for _ in range(0,100)]],
-            "Rosenborg": [range(0,100),[random.randint(40,60) for _ in range(0,100)]],
-            "No target": [range(0,100),[random.randint(30,40) for _ in range(0,100)]]}
-    for key in data.keys():
-        print len(data[key][0])
-        print len(data[key][1])
-    plot_temporal_sentiment(data)
+#    data = {"Erna Solberg": [range(0,100),[random.randint(20,50) for _ in range(0,100)]],
+#            "Rosenborg": [range(0,100),[random.randint(40,60) for _ in range(0,100)]],
+#            "No target": [range(0,100),[random.randint(30,40) for _ in range(0,100)]]}
+#    for key in data.keys():
+#        print len(data[key][0])
+#        print len(data[key][1])
+#    plot_temporal_sentiment(data)
+
+
