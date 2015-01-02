@@ -3,41 +3,72 @@ Created on 27. nov. 2014
 
 @author: JohnArne
 '''
+from sklearn.feature_extraction.text import CountVectorizer
 
-def get_feature_set(tweets,featureset):
-    if(featureset=='A'):
-        return get_feature_set_A(tweets)
-    elif(featureset=='B'):
-        return get_feature_set_B(tweets)
-    elif(featureset=='C'):
-        return get_feature_set_C(tweets)
+def get_feature_set(tweet,featureset):
+    if(featureset=='SA'):
+        return get_feature_set_SA(tweet)
+    elif(featureset=='SB'):            
+        return get_feature_set_SB(tweet)
+    elif(featureset=='SC'):            
+        return get_feature_set_SC(tweet)
+    elif(featureset=='PA'):              
+        return get_feature_set_PA(tweet)
+    elif(featureset=='PB'):            
+        return get_feature_set_PB(tweet)
+    elif(featureset=='PC'):            
+        return get_feature_set_PC(tweet)
+    
 
-def get_feature_set_A(tweets):
+def get_feature_set_SA(tweet):
     """
-    Retrieves a list of tweets objects and returns feature set A.
+    Retrieves a list of tweets objects and returns feature set SA, which is only text frequencies...
     """
-    print "Getting feature set A"
-    features= []
-    
-    
+    features= {}
     return features
 
-def get_feature_set_B(tweets):
+def get_feature_set_SB(tweet):
     """
-    Retrieves a list of tweets objects and returns feature set B.
+    Creates a dict with grammatical features to be included in classification. Returns it to the classification model.
+    Features to be included: pos-tags, 
     """
-    print "Getting feature set A"
-    features= []
-    
-    
+    features= {
+               'text_length': len(tweet.text)
+               } #ADD ADDITIONAL FEATURES
     return features
 
-def get_feature_set_C(tweets):
+
+def get_feature_set_SC(tweet):
     """
-    Retrieves a list of tweets objects and returns feature set C.
+    Retrieves a list of tweets objects and returns feature set SC.
     """
-    print "Getting feature set A"
-    features= []
-    
-    
+    features= {
+               'text_length': len(tweet.text)
+               } #ADD ADDITIONAL FEATURES
+    return features
+
+
+def get_feature_set_PA(tweet):
+    """
+    Retrieves a list of tweets objects and returns feature set PA, which is noone... Only word tokens.
+    """
+    features= {}
+    return features
+
+def get_feature_set_PB(tweet):
+    """
+    Retrieves a list of tweets objects and returns feature set PB.
+    """
+    features= {
+               'text_length': len(tweet.text)
+               } #ADD ADDITIONAL FEATURES
+    return features
+
+def get_feature_set_PC(tweet):
+    """
+    Retrieves a list of tweets objects and returns feature set PC.
+    """
+    features= {
+               'text_length': len(tweet.text)
+               } #ADD ADDITIONAL FEATURES
     return features

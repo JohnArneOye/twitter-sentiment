@@ -85,6 +85,24 @@ def remove_specialchars(tweets):
         tweet.text = textbody
     return tweets
 
+def remove_specialchars_round2(tweets):
+    for tweet in tweets:
+        textbody = tweet.text
+        pattern = re.compile('({|}|[|]|-|:|"|@|\*|\)|\(|\\|.)')
+        try:
+            textbody = pattern.sub("", textbody)
+        except UnicodeDecodeError:
+            textbody = pattern.sub("", textbody.decode('utf8'))
+        try:
+            textbody = string.replace(textbody, "_", " ")
+        except UnicodeEncodeError:
+            textbody = string.replace(textbody.decode('utf8'), "_", " ")
+#        textbody = string.replace(textbody, "?", "")
+#        textbody = string.replace(textbody, ".", "")
+#        textbody = string.replace(textbody, "!", "")
+        tweet.text = textbody
+    return tweets
+
 def remove_hastags_and_users(tweets):
     """
     Removes hashtag labels and user labels, whenever it encounters a hashtag, it increments the hashtag counter in the respective tweet object. Stores both hastags and users in the tweet objects.
@@ -194,6 +212,16 @@ def pos_tag(tweets):
     for text in untagged_texts:
         print text
     print "Tagging done."
+    return tweets
+
+def remove_link_classes(tweets):
+    """
+    Removes the link classes from the given tweets, returns the positions of these links.
+    """
+    for t in tweets:
+        t.link_pos = [m.start() for m in re.finditer('\<link\>', t.text)]       
+        link_replaced_text = " ".join(["" if word=="<link>" else word for word in t.text.split(' ')])
+        t.text = link_replaced_text
     return tweets
 
 def re_analyze():

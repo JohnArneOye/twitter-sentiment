@@ -4,6 +4,7 @@ Handles plotting of different visualizations of data.
 '''
 import matplotlib.pyplot as plt
 import random
+import numpy as np
 
 def plot_temporal_sentiment(data):
     """
@@ -69,66 +70,69 @@ def plot_temporal_sentiment(data):
         # Add a text label to the right end of every line. Most of the code below  
         # is adding specific offsets y position because some labels overlapped.  
         y_pos = data[column][1][-1] - 0.5  
-        if column == "Foreign Languages":  
-            y_pos += 0.5  
-        elif column == "English":  
-            y_pos -= 0.5  
-        elif column == "Communications\nand Journalism":  
-            y_pos += 0.75  
-        elif column == "Art and Performance":  
-            y_pos -= 0.25  
-        elif column == "Agriculture":  
-            y_pos += 1.25  
-        elif column == "Social Sciences and History":  
-            y_pos += 0.25  
-        elif column == "Business":  
-            y_pos -= 0.75  
-        elif column == "Math and Statistics":  
-            y_pos += 0.75  
-        elif column == "Architecture":  
-            y_pos -= 0.75  
-        elif column == "Computer Science":  
-            y_pos += 0.75  
-        elif column == "Engineering":  
-            y_pos -= 0.25  
           
         # Again, make sure that all labels are large enough to be easily read  
         # by the viewer.  
-        plt.text(77.5, y_pos, column, fontsize=14, color=tableau20[rank])  
-          
-    # matplotlib's title() call centers the title on the plot, but not the graph,  
-    # so I used the text() call to customize where the title goes.  
+        plt.text(76.5, y_pos, column, fontsize=14, color=tableau20[rank])  
       
-    # Make the title big enough so it spans the entire plot, but don't make it  
-    # so big that it requires two lines to show.  
-      
-    # Note that if the title is descriptive enough, it is unnecessary to include  
-    # axis labels; they are self-evident, in this plot's case.  
-#    plt.text(60.5, 93, "Aggregate temporal sentiment from Norwegian tweets for three different topics.", fontsize=17, ha="center")  
-      
-    # Always include your data source(s) and copyright notice! And for your  
-    # data sources, tell your viewers exactly where the data came from,  
-    # preferably with a direct link to the data. Just telling your viewers  
-    # that you used data from the "U.S. Census Bureau" is completely useless:  
-    # the U.S. Census Bureau provides all kinds of data, so how are your  
-    # viewers supposed to know which data set you used?  
-#    plt.text(42, -8, "Data source: nces.ed.gov/programs/digest/2013menu_tables.asp"  
-#           "\nAuthor: Randy Olson (randalolson.com / @randal_olson)"  
-#           "\nNote: Some majors are missing because the historical data "  
-#           "is not available for them", fontsize=10)  
-#      
-    # Finally, save the figure as a PNG.  
-    # You can also save it as a PDF, JPEG, etc.  
-    # Just change the file extension in this call.  
-    # bbox_inches="tight" removes all the extra whitespace on the edges of your plot.  
     plt.savefig("temporal_sentiments.png", bbox_inches="tight");  
    
-def plot_performance_histogram(data):
+def plot_performance_histogram(data, filename):
     """
     Plots the performance of different algorithms.
     """
-    something = ""
-    return something
+    tableau20 = [(31, 119, 180), (174, 199, 232), (255, 127, 14), (255, 187, 120),  
+                 (44, 160, 44), (152, 223, 138), (214, 39, 40), (255, 152, 150),  
+                 (148, 103, 189), (197, 176, 213), (140, 86, 75), (196, 156, 148),  
+                 (227, 119, 194), (247, 182, 210), (127, 127, 127), (199, 199, 199),  
+                 (188, 189, 34), (219, 219, 141), (23, 190, 207), (158, 218, 229)]  
+      
+    # Scale the RGB values to the [0, 1] range, which is the format matplotlib accepts.  
+    for i in range(len(tableau20)):  
+        r, g, b = tableau20[i]  
+        tableau20[i] = (r / 255., g / 255., b / 255.)  
+      
+    # You typically want your plot to be ~1.33x wider than tall. This plot is a rare  
+    # exception because of the number of lines being plotted on it.  
+    # Common sizes: (10, 7.5) and (12, 9)  
+    f = plt.figure()  
+      
+    # Remove the plot frame lines. They are unnecessary chartjunk.  
+    ax = plt.subplot(111)  
+    
+    labels = data.keys()
+    print labels
+    precisions = [data[key][0] for key in labels] 
+    recalls = [data[key][1] for key in labels]
+    f1s = [data[key][2] for key in labels]
+    accuracies = [data[key][3] for key in labels]
+    
+    ind = (np.arange(len(labels))*2)+0.25
+    width = 0.35
+    ax.bar(ind, precisions, width, color=tableau20[0], edgecolor="none")
+    ax.bar(ind+width, recalls, width, color=tableau20[1], edgecolor="none")
+    ax.bar(ind+width*2, f1s, width, color=tableau20[2], edgecolor="none")
+    ax.bar(ind+width*3, accuracies, width, color=tableau20[3], edgecolor="none")
+    
+    ax.spines["top"].set_visible(False)  
+#    ax.spines["bottom"].set_visible(False)  
+    ax.spines["right"].set_visible(False)  
+    ax.spines["left"].set_visible(False)
+    ax.set_xticks(ind+width*2)  
+    ax.set_xticklabels(labels)  
+    # Ensure that the axis ticks only show up on the bottom and left of the plot.  
+    # Ticks on the right and top of the plot are generally unnecessary chartjunk.  
+    ax.get_xaxis().tick_bottom()  
+    ax.get_yaxis().tick_left()  
+
+    for y in [0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8]:  
+        plt.plot(range(0,7), [y] * len(range(0,7)), "--", lw=0.5, color="black", alpha=0.3)  
+      
+    # Remove the tick marks; they are unnecessary with the tick lines we just plotted.  
+    plt.tick_params(axis="both", which="both", bottom="off", top="off",  
+                    labelbottom="on", left="off", right="off", labelleft="on",labelcolor=tableau20[14])  
+  
+    plt.savefig(filename+".png", bbox_inches="tight");  
     
 def plot_dataset_stats(data):
     """
@@ -136,7 +140,6 @@ def plot_dataset_stats(data):
     """
 
     
-if __name__ == '__main__':
 #    data = {"Erna Solberg": [range(0,100),[random.randint(20,50) for _ in range(0,100)]],
 #            "Rosenborg": [range(0,100),[random.randint(40,60) for _ in range(0,100)]],
 #            "No target": [range(0,100),[random.randint(30,40) for _ in range(0,100)]]}
@@ -144,5 +147,9 @@ if __name__ == '__main__':
 #        print len(data[key][0])
 #        print len(data[key][1])
 #    plot_temporal_sentiment(data)
-
+if __name__ == '__main__':
+    data = {"Naive Bayes": [0.645, 0.6, 0.5, 0.69],
+            "SVM": [0.7, 0.8, 0.82, 0.87],
+            "MaxEnt": [0.81, 0.72, 0.71, 0.79]}
+    plot_performance_histogram(data, "svm_sub_performance")
 

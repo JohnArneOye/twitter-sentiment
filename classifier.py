@@ -22,17 +22,10 @@ class Classifier(object):
     Takes in a selected model type(NV/SVM/ME) trains it on a given dataset, then tests it.
     """
     
-    def __init__(self, m):
-        self.model = m
+    def __init__(self, subjectivity_model, polarity_model):
+        self.subjectivity_model = subjectivity_model
+        self.polarity_model = polarity_model
         
-    def train(self):
-        """
-        Trains the given model on the dataset.
-        """
-        dataset = "erna_dataset"
-        tweets = utils.get_pickles(dataset)
-        self.model.set_feature_set('A')
-        self.model.train_on_feature_set()
        
     def test(self):
         """
@@ -41,17 +34,23 @@ class Classifier(object):
         
     def classify(self, tweets):
         """
-        Takes in a list of tweets and classifies them using the trained model
+        Takes in a list of tweets and classifies with all three classes using the two trained models
         """
         sentiments = []
-        for tweet in tweets:
-            sentiments.append(self.model.get_sentiment(tweet.text))
+        predictions = self.subjectivity_model.classify(tweets)
         return sentiments
     
     def save_model(self):
         file = open()
 
-
+    def train_and_store_results(self):
+        """
+        Trains the given model on the dataset using the three different models, and different feature sets. Stores the results of the runs.
+        """
+        dataset = "random_dataset"
+        tweets = utils.get_pickles(dataset)
+        self.model.set_feature_set('A')
+        self.model.train_on_feature_set()
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description="Commands for classification")

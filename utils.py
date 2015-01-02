@@ -139,31 +139,55 @@ def split_train_and_test(tweets):
     test_tweets = tweets[split_pos:len(tweets)]
     return train_tweets, test_tweets
 
-def make_polarity_set_and_target(tweets):
+def make_polarity_train_and_test_and_targets(tweets):
     """
     Removes objective tweets and returns a completely subjective dataset, along with the positive or negative targets.
     """
-    pol_tweets = [t for t in tweets if t.subjectivity==0]
-    pol_targets = [t.get_sentiment() for t in tweets if t.subjectivity==0]
-    return pol_tweets, pol_targets
+    pol_tweets = [t for t in tweets if t.subjectivity==1]
+    split_pos = int(len(pol_tweets)*0.8)
+    train_tweets = pol_tweets[0:split_pos]
+    test_tweets = pol_tweets[split_pos:len(tweets)]
     
-def make_subjectivity_set_and_target(tweets):
+    pol_train_targets = [t.get_sentiment() for t in train_tweets]
+    pol_test_targets = [t.get_sentiment() for t in test_tweets]
+    return train_tweets, pol_train_targets, test_tweets, pol_test_targets
+    
+def make_subjectivity_train_and_test_and_targets(tweets):
     """
     Returns a dataset for subjectivity classification, along with the targets for classification
     """
-    sub_tweets =tweets
-    sub_targets = ['objective' if t.subjectivity==0 else 'subjective' for t in tweets]
-    return sub_tweets, sub_targets
+    split_pos = int(len(tweets)*0.8)
+    train_tweets = tweets[0:split_pos]
+    test_tweets = tweets[split_pos:len(tweets)]
+    print "Train tweets: ", len(train_tweets)
+    print "test tweeets: ", len(test_tweets) 
     
-def store_model(model):
+    sub_train_targets = ['objective' if t.subjectivity==0 else 'subjective' for t in train_tweets]
+    sub_test_targets = ['objective' if t.subjectivity==0 else 'subjective' for t in test_tweets]
+    print "Train targets: ", len(sub_train_targets)
+    print "test targets ", len(sub_test_targets)
+    return train_tweets, sub_train_targets, test_tweets, sub_test_targets
+    
+def store_model(name, params, score, file_postfix=""):
     """
     Stores the given dict as a pickle in the stored estimators folder.
     """
-    out = open("stored_estimators/"+model['name'], 'wb')
-    pickle.dump(model, out)
+    out = open("stored_estimators/"+str(name)+str(score)+str(file_postfix), 'wb')
+    pickle.dump(params, out)
     out.close()
-    return model
-    
+    return params
+
+def reduce_targets(targets):
+    """
+    Reduces a set of subjectivity or polarity targets to 1s and 0s
+    """ 
+    if len(targets)<1: return []
+    if targets[0]=='objective' or targets[0]=='subjective':
+        binaries = [0 if target=='objective' else 1 for target in targets]
+    else:
+        binaries = [0 if target=='negative' else 1 for target in targets]
+    return binaries
+
 pickles = ['tweet_pickles/random_dataset',
            'tweet_pickles/rosenborg_dataset',
            'tweet_pickles/erna_dataset']
