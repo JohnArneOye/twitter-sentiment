@@ -44,3 +44,9 @@ TYPECRAFT_SENTIWORDNET = {  'ADJ':      'a',
                             'VtrOBL':   'v',
                             'Vvec':     'v',
                             'Vvector':  'v'}
+
+
+ADJECTIVES = ['ADJ','ADJC','ADJS']
+ADVERBS = ['ADV','ADVm','ADVneg','ADVplc','ADVtemp']
+PRONOUNS = ['PN','PNabs','PNana','PNdem','PNposs','PNrefl','PNrel']
+NOUNS = ['CN','N','Nbare','Ncomm','NDV','NFEM','NMASC','NNEUT','NNO','Np','Nrel','Nspat']

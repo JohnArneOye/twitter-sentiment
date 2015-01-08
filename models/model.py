@@ -16,13 +16,14 @@ from sklearn import metrics
 import numpy as np
 import scipy.sparse as sp
 from sklearn.feature_extraction.dict_vectorizer import DictVectorizer
+import codecs
 
 class Model(object):
     """
     Class for abstracting the different classification models.
     """
     
-    def __init__(self, train_tweets, train_targets, vect_options, extra_params):
+    def __init__(self, train_tweets, train_targets, vect_options, tfidf_options, extra_params):
         self.grid_params = {
 #                            'vect__ngram_range': [(1,1),(1,2),(2,2)],
 #                      'tfidf__use_idf': (True,False),
@@ -32,6 +33,7 @@ class Model(object):
         
         self.grid_params = dict(self.grid_params.items()+extra_params.items())
         self.vect_options = vect_options
+        self.tfidf_options = tfidf_options
         self.feature_set = {}
         self.train_tweets = train_tweets
         self.train_targets = train_targets
@@ -47,8 +49,8 @@ class Model(object):
         
         
         self.vect = CountVectorizer(**self.vect_options)
-        self.tfidf_transformer = TfidfTransformer(sublinear_tf=True, use_idf=True, smooth_idf=True)
-        self.dict_transformer = TfidfTransformer(sublinear_tf=True, use_idf=True, smooth_idf=True)
+        self.tfidf_transformer = TfidfTransformer(**self.tfidf_options)
+        self.dict_transformer = TfidfTransformer(**self.tfidf_options)
 #        train_counts_tf = tfidf_transformer.fit_transform(train_counts)
         
         count_vector = self.vect.fit_transform([t.text for t in self.train_tweets])
@@ -58,7 +60,16 @@ class Model(object):
         else:
             self.dict_vectorizer = DictVectorizer()
             dict_vector = self.dict_vectorizer.fit_transform(self.feature_set)
+            
+            f=codecs.open("feature_set.txt", "w", "utf8")
+            for d in dict_vector:
+                f.write(d.__str__())
+            f.close()
             tfidf_dict = self.dict_transformer.fit_transform(dict_vector)
+            f=codecs.open("feature_set_tdidf.txt", "w", "utf8")
+            for d in tfidf_dict:
+                f.write(d.__str__())
+            f.close()
             combined_vector = sp.hstack([tfidf_count, tfidf_dict])
 #        combined_features = FeatureUnion()
         #Crossvalidation
@@ -68,7 +79,8 @@ class Model(object):
         pipeline_classifier = Pipeline([
 #                                        ('vect', self.vect),
 #                                    ('tfidf', self.tfidf_transformer),
-                                    ('clf', self.classifier)])
+                                    ('clf', self.classifier)
+                                    ])
         
         #Perform grid search
         print "Performing grid search with classifier of instance ",str(self.classifier.__class__.__name__)
@@ -89,26 +101,25 @@ class Model(object):
         utils.store_model(self.classifier.__class__.__name__, self.best_parameters, self.best_score)
         return self.grid
         
-    def grid_search_on_feature_set(self, cross_validate=True, use_tfidf=True, file_postfix=""):
+    def grid_search_on_text_features(self, cross_validate=True, file_postfix=""):
         """
-        Performs a grid search using text features on the given dataset.
+        Performs a grid search using text features on the given dataset. Stores the parameters for the optimal classifier.
         """
         
         self.grid_params = {
-                    'vect__ngram_range': [(1,1),(1,2),(2,2),(1,3),(1,4)],
-              'tfidf__use_idf': (True,False),
-              'tfidf__smooth_idf': (True, False),
-              'tfidf__sublinear_tf': (True, False),
+                    'vect__ngram_range': [(1,1),(1,2),(2,2),(1,3),(2,3),(3,3),(1,4)],
+              'vect__use_idf': (True,False),
+              'vect__smooth_idf': (True, False),
+              'vect__sublinear_tf': (True, False),
+              'vect__max_df': (0.5,),
               }
-        self.vect = CountVectorizer()
-        self.tfidf_transformer = TfidfTransformer()
+        self.vect = TfidfVectorizer()
 
         cross_validation = StratifiedKFold(self.train_targets, n_folds=10)
         
         #Build a Pipeline with TFidfVectorizer and classifier
         pipeline_classifier = Pipeline([
                                         ('vect', self.vect),
-                                    ('tfidf', self.tfidf_transformer),
                                     ('clf', self.classifier)]
                                        )
         
@@ -131,16 +142,18 @@ class Model(object):
         utils.store_model(self.classifier.__class__.__name__, self.best_parameters, self.best_score, file_postfix=file_postfix)
         return self.grid
 
-    def classify(self, tweets):
+    def classify(self, tweets, sentimentvalues=None):
         """
         Performs the classification process on list of tweets.
         """
+        if sentimentvalues!=None:
+            self.test_words_and_values = sentimentvalues
         count_vector = self.vect.transform([t.text for t in tweets])
         tfidf_count = self.tfidf_transformer.transform(count_vector)
         if self.only_text_features:
             combined_vector = tfidf_count
         else:
-            dict_vector = self.dict_vectorizer.transform([features.get_feature_set(t, self.featureset) for t in tweets])
+            dict_vector = self.dict_vectorizer.transform([features.get_feature_set(t, self.featureset, v) for t,v in zip(tweets, self.test_words_and_values)])
             tfidf_dict = self.dict_transformer.transform(dict_vector)
             combined_vector = sp.hstack([tfidf_count, tfidf_dict])
                 
@@ -148,11 +161,22 @@ class Model(object):
 
         return predictions
 
-    
-    def test_and_return_results(self, test_tweets, test_targets):
+    def classify_text(self, texts):
+        """
+        Performs classification with only text features.
+        """
+        
+        count_vector = self.vect.transform([t for t in texts])
+        text_vector = self.tfidf_transformer.transform(count_vector)
+        predictions = self.best_estimator.predict(text_vector)
+
+        return predictions
+        
+    def test_and_return_results(self, test_tweets, test_targets, sentimentvalues):
         """
         Tests the classifier on a given test set, and returns the accuracy, precision, recall, and f1 score.
         """
+        self.test_words_and_values = sentimentvalues
         predictions = self.classify(test_tweets)
         binary_predictions = utils.reduce_targets(predictions)
         binary_test_targets = utils.reduce_targets(test_targets)
@@ -165,15 +189,41 @@ class Model(object):
         
         return accuracy, precision, recall, f1_score
     
-    def set_feature_set(self, featureset):
+    def get_correctly_classified_tweets(self, tweets, sentimentvalues=None):
         """
-        Extracts and stores the given feature set for classification
+        Classifies the given set of tweets and returns the ones that were correctly classified.
+        """
+        if sentimentvalues!=None:
+            self.test_words_and_values = sentimentvalues
+        count_vector = self.vect.transform([t.text for t in tweets])
+        tfidf_count = self.tfidf_transformer.transform(count_vector)
+        if self.only_text_features:
+            combined_vector = tfidf_count
+        else:
+            dict_vector = self.dict_vectorizer.transform([features.get_feature_set(t, self.featureset, v) for t,v in zip(tweets, self.test_words_and_values)])
+            tfidf_dict = self.dict_transformer.transform(dict_vector)
+            combined_vector = sp.hstack([tfidf_count, tfidf_dict])
+                
+        predictions = self.best_estimator.predict(combined_vector)
+        tweets, targets = utils.make_subjectivity_targets(tweets)
+        #return the tweets where the target match prediction
+        correct_tweets = []
+        for i in xrange(len(tweets)):
+            if predictions[i]==targets[i]:
+                correct_tweets.append(tweets[i]) 
+                print "Tweet: ",tweets[i].text, " ", tweets[i].get_sentiment(), " ", predictions[i]
+        return correct_tweets
+    
+    def set_feature_set(self, featureset, sentimentvalues):
+        """
+        Extracts and stores the given feature set for classification.
         """
         self.featureset = featureset
         if featureset=='SA' or featureset=='PA':
             self.only_text_features=True
             self.feature_set = {}
         else:
-            self.feature_set = [features.get_feature_set(t, self.featureset) for t in self.train_tweets]
+            words_and_values = sentimentvalues
+            self.feature_set = [features.get_feature_set(t, self.featureset, v) for t,v in zip(self.train_tweets,words_and_values)]
         
                 

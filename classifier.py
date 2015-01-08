@@ -11,6 +11,9 @@ from models.nb import NB
 from models.svm import SVM
 from models.me import ME
 from models import features
+from models import model
+from lexicon import lexicon
+import test
 
 import annotation
 import easygui_gui
@@ -51,7 +54,47 @@ class Classifier(object):
         tweets = utils.get_pickles(dataset)
         self.model.set_feature_set('A')
         self.model.train_on_feature_set()
+        
+def get_optimal_subjectivity_classifier():
+    """
+    Trains and returns the optimal subjectivity classifier.
+    """
+    tweets = utils.get_pickles(3)
+    tweets, targets = utils.make_subjectivity_targets(tweets)
+    vect_options = {
+          'ngram_range': (1,1),
+          'max_df': 0.5
+        }
+    tfidf_options = {
+         'sublinear_tf': False,
+          'use_idf': True,
+          'smooth_idf': True,
+                     }
+    clf = SVM(tweets, targets, vect_options, tfidf_options)
+    clf.set_feature_set('SA', None)
+    clf.train_on_feature_set()
+    return clf
 
+def get_optimal_polarity_classifier():
+    """
+    Trains and returns the optimal polarity classifier.
+    """
+    tweets = utils.get_pickles(3)
+    tweets, targets = utils.make_subjectivity_targets(tweets)
+    vect_options = {
+          'ngram_range': (1,1),
+          'max_df': 0.5
+        }
+    tfidf_options = {
+         'sublinear_tf': False,
+          'use_idf': True,
+          'smooth_idf': True,
+                     }
+    clf = SVM(tweets, targets, vect_options, tfidf_options)
+    clf.set_feature_set('PB', None)
+    clf.train_on_feature_set()
+    return clf
+    
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description="Commands for classification")
     parser.add_argument("-pre1", action="store_true", dest="preprocess1", default=False, help="Perform first round preprocessing: Duplicate and retweet removal")
@@ -62,7 +105,11 @@ if __name__ == '__main__':
     parser.add_argument("-nb", action="store_true", dest="naivebayes", default=False, help="Perform a default naive bayes classification.")
     parser.add_argument("-a", action="store_true", dest="annotate", default=False, help="Start annotation sequence.")
     parser.add_argument("-analyze", action="store_true", dest="analyze", default=False, help="Perform a re-analysis of the pickled datasets. This analysis is also performed as part of the second preprocessing.")
+    parser.add_argument("-posanalyze", action="store_true", dest="posanalyze", default=False, help="Perform a pos-tag analysis of the pickled datasets.")
     parser.add_argument("-run", action="store_true", dest="run_easygui", default=False, help="Run classification routine with graphical interface.")
+    parser.add_argument("-lex", action="store_true", dest="run_lexicon", default=False, help="Run lexicon translation and lookup on stored tweets")
+    parser.add_argument("-optimize", action="store_true", dest="optimize", default=False, help="Find optimal parameters for text classification with SVM, NB, and MaxEnt. Stores the optimal parameters for each algorithm.")
+    parser.add_argument("-test", action="store_true", dest="train_and_test", default=False, help="Train and test on subjectivity and polarity and create a diagram of the results.")
     
     parsameters = parser.parse_args()
     if parsameters.encodeunicode:
@@ -81,9 +128,14 @@ if __name__ == '__main__':
         annotation.user_annotation()
     if parsameters.analyze:
         preprocessing.re_analyze()
+    if parsameters.posanalyze:
+        preprocessing.pos_analyze()
     if parsameters.run_easygui:
         easygui_gui.show_windows()
-        
-    
-    
+    if parsameters.run_lexicon:
+        preprocessing.lexicon_lookup()
+    if parsameters.optimize:
+        test.perform_grid_search_on_featureset_SA_and_PA()
+    if parsameters.train_and_test:
+        test.train_and_test_subjectivity_and_polarity()
     

@@ -4,3 +4,16 @@ flink	ADJ
 hårkam	N
 bamse	N
 godt	ADV
+fin
+flott
+super
+dritt
+bæsj
+rumpe
+troll
+data
+general
+trygg
+sladder
+humre
+latter

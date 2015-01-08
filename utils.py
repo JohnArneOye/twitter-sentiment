@@ -113,11 +113,13 @@ def store_pickles(tweets, filepath):
     output = open("tweet_pickles/"+filepath, 'wb')
     pickle.dump(tweets, output)
     
-def get_pickles():
+def get_pickles(setnr=None):
     """
     Gets the stored tweet pickles.
     """
-    setnr = int(raw_input("Get which pickle set? 0: RandomSet 1: RoseborgSet 2: ErnaSet 3: All three ..."))
+    if setnr==None:
+        setnr = int(raw_input("Get which pickle set? 0: RandomSet 1: RoseborgSet 2: ErnaSet 3: All three ..."))
+        
     if setnr is 3:
         #fetch all sets and append them together
         tweets = []
@@ -139,26 +141,36 @@ def split_train_and_test(tweets):
     test_tweets = tweets[split_pos:len(tweets)]
     return train_tweets, test_tweets
 
-def make_polarity_train_and_test_and_targets(tweets):
+def make_polarity_train_and_test_and_targets(tweets, sentimentvalues):
     """
     Removes objective tweets and returns a completely subjective dataset, along with the positive or negative targets.
     """
-    pol_tweets = [t for t in tweets if t.subjectivity==1]
+    pol_tweets = []
+    pol_sentiments = []
+    for t,s in zip(tweets, sentimentvalues):
+        if t.subjectivity==1:
+            pol_tweets.append(t)
+            pol_sentiments.append(s)
+
     split_pos = int(len(pol_tweets)*0.8)
     train_tweets = pol_tweets[0:split_pos]
-    test_tweets = pol_tweets[split_pos:len(tweets)]
+    test_tweets = pol_tweets[split_pos:]
+    train_sentimentvalues = pol_sentiments[0:split_pos]
+    test_sentimentvalues = pol_sentiments[split_pos:len(pol_sentiments)]
     
     pol_train_targets = [t.get_sentiment() for t in train_tweets]
     pol_test_targets = [t.get_sentiment() for t in test_tweets]
-    return train_tweets, pol_train_targets, test_tweets, pol_test_targets
+    return train_tweets, pol_train_targets, test_tweets, pol_test_targets, train_sentimentvalues, test_sentimentvalues
     
-def make_subjectivity_train_and_test_and_targets(tweets):
+def make_subjectivity_train_and_test_and_targets(tweets, sentimentvalues):
     """
     Returns a dataset for subjectivity classification, along with the targets for classification
     """
     split_pos = int(len(tweets)*0.8)
     train_tweets = tweets[0:split_pos]
     test_tweets = tweets[split_pos:len(tweets)]
+    train_sentimentvalues = sentimentvalues[0:split_pos]
+    test_sentimentvalues = sentimentvalues[split_pos:len(sentimentvalues)]
     print "Train tweets: ", len(train_tweets)
     print "test tweeets: ", len(test_tweets) 
     
@@ -166,7 +178,15 @@ def make_subjectivity_train_and_test_and_targets(tweets):
     sub_test_targets = ['objective' if t.subjectivity==0 else 'subjective' for t in test_tweets]
     print "Train targets: ", len(sub_train_targets)
     print "test targets ", len(sub_test_targets)
-    return train_tweets, sub_train_targets, test_tweets, sub_test_targets
+    return train_tweets, sub_train_targets, test_tweets, sub_test_targets, train_sentimentvalues, test_sentimentvalues
+    
+def make_subjectivity_targets(tweets):
+    sub_train_targets = ['objective' if t.subjectivity==0 else 'subjective' for t in tweets]
+    return tweets, sub_train_targets
+    
+def make_polarity_targets(tweets):
+    pol_train_targets = [t.get_sentiment() for t in tweets]
+    return tweets, pol_train_targets
     
 def store_model(name, params, score, file_postfix=""):
     """
@@ -177,6 +197,40 @@ def store_model(name, params, score, file_postfix=""):
     out.close()
     return params
 
+def store_sentimentvalues(words_with_values, filename):
+    """
+    Pickles the given list of dicts with sentiment values.
+    """
+    #Pickle sentiment values
+    output = open(filename, 'wb')
+    pickle.dump(words_with_values, output)
+    
+    f = codecs.open("sentiment_values.txt", "a", "utf8")
+    for t in words_with_values:
+        for word in t.keys():
+            f.write(word+" "+str(t[word])+"\n")
+    f.close()
+
+def get_sentimentvalues(setnr=None):
+    """
+    Gets the pickles of sentiment values
+    """
+    if setnr==None:
+        setnr = int(raw_input("Get which pickle set? 0: RandomSet 1: RoseborgSet 2: ErnaSet 3: All three ..."))
+        
+    if setnr is 3:
+        #fetch all sets and append them together
+        tweets = []
+        for pickleset in sentiment_pickles:
+            tweets = tweets + pickle.load(open(pickleset, 'rb'))
+        return tweets
+    else:
+        tweets = pickle.load(open(sentiment_pickles[setnr], 'rb'))
+        return tweets
+    
+    return tweets
+    
+    
 def reduce_targets(targets):
     """
     Reduces a set of subjectivity or polarity targets to 1s and 0s
@@ -191,6 +245,10 @@ def reduce_targets(targets):
 pickles = ['tweet_pickles/random_dataset',
            'tweet_pickles/rosenborg_dataset',
            'tweet_pickles/erna_dataset']
+
+sentiment_pickles = ['models/sentimentvalues_random_dataset',
+           'models/sentimentvalues_rosenborg_dataset',
+           'models/sentimentvalues_erna_dataset']
     
 sentiments = ["negative",
               "neutral",

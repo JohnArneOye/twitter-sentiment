@@ -82,10 +82,24 @@ class Analyzer:
         stats.store_tex()
         return stats
     
-    def pos_tag_analyze(self):
+    def pos_tag_analyze(self,tweets, postfix=""):
         """
         Perform a comparison of POS tags between different sentiment classes in the dataset.
         """
+        data = {} #dict to contain all the pos tags and their given values
+        
+        #Count all the pos tag frequencies
+        for t in tweets:
+            for phrase in t.tagged_words:
+                for word in phrase:
+                    try:
+                        tag = word['pos']
+                        data[tag] = data.get(tag, 0) + 1
+                    except KeyError:
+                        continue
+                    
+        #Calculate
+        
         
     
     def sentiment_class_analysis(self, dataset2, tweets2, dataset3, tweets3):

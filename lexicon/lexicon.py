@@ -12,6 +12,7 @@ from pos_mappings import TYPECRAFT_SENTIWORDNET
 import gettext
 import codecs
 import subprocess
+import pickle
 
 class Lexicon():
     """
@@ -35,7 +36,7 @@ class Lexicon():
 class SentiWordNetLexicon():
     
     def __init__(self):
-        SWN_FILENAME = "SentiWordNet_3.0.0_20130122.txt"
+        SWN_FILENAME = "lexicon\SentiWordNet_3.0.0_20130122.txt"
         self.swn= SentiWordNetCorpusReader(SWN_FILENAME)
 
     def get_values(self, word, context=None, pos_tag=None):
@@ -43,24 +44,49 @@ class SentiWordNetLexicon():
         Perform lookup in SentiWordNet
         """
 #            entry = swn.senti_synset("breakdown.n.03")
-        entries = self.swn.senti_synsets(word)
+        entries = None
+        for w in word.split(' '):
+            entries = self.swn.senti_synsets(w)
+            if entries != None: break
         if entries is None or len(entries)==0: 
-            return 0,0,0
+            return None
         if len(entries)==1 or pos_tag is None:
-            return entries[0].pos_score, entries[0].neg_score, entries[0].obj_score
+            return [entries[0].pos_score, entries[0].neg_score, entries[0].obj_score]
         elif len(entries)>1:
             #Find out which word to chose, if there are several classes
-            print "Several entires ",entries
+            print "Several entries ",entries
             for entry in entries:
                 if entry.synset.pos()==TYPECRAFT_SENTIWORDNET[pos_tag]:
                     print "Found matching entry: ", entry
-                    return entry.pos_score, entry.neg_score, entry.obj_score
+                    return [entry.pos_score, entry.neg_score, entry.obj_score]
             
-            return entries[0]
-        return 0,0,0
+            return [entries[0].pos_score, entries[0].neg_score, entries[0].obj_score]
+        return None
 
+class BingTranslater():
+    
+    def __init__(self, words):
+        self.original_words = words
+        file = codecs.open("bing_words.txt", "w", "utf8")
+        for word in words:
+            file.write(word+"\n")
+        file.close()
         
-class GoogleBingTranslater():
+        print "Bing translating ",len(words)," words..."
+        subprocess.call("lexicon/bingtranslater.exe")
+        file = codecs.open("translated_words.txt", "r", "utf8")
+        translated_words = file.readlines()
+        file.close()
+        self.translation_mapping = dict(zip(self.original_words, translated_words))
+        print "Bing done..."
+    
+    def translate(self, word):
+        try:
+            return self.translation_mapping[word]
+        except KeyError:
+            return None 
+        
+class GoogleTranslater():
     
     def __init__(self):
         self.translation_url = "https://translate.google.com/#no/en/"
@@ -99,24 +125,43 @@ def perform_sentiment_lexicon_lookup(tweets):
     """
     words = []
     for t in tweets:
-        words + [word["word"]+"\t"+word["pos"] for word in t.tagged_words if word["pos"] in TYPECRAFT_SENTIWORDNET]
+        for phrase in t.tagged_words:
+            for word in phrase:
+                try:
+                    if word["pos"] in TYPECRAFT_SENTIWORDNET:
+                        words.append(word['word'])
+                except KeyError:
+                    continue 
+                        
+                
+    lex = Lexicon(BingTranslater(words), SentiWordNetLexicon())
+    words_with_sentimentvalues=[]#list of dicts
+    print "Getting sentiment values"
+    for t in tweets:
+        sentiwords =[]
+        sentiwords_with_values={}
+        for phrase in t.tagged_words:
+            for word in phrase:
+                try:
+                    if word["pos"] in TYPECRAFT_SENTIWORDNET:
+                        sentiwords.append(word['word'])
+                except KeyError:
+                    continue
+        for sentiword in sentiwords:
+            sentivalues = lex.translate_and_get_lexicon_sentiment(sentiword)
+            if sentivalues!=None:
+                print "Adding sentivalues: ",sentivalues
+                sentiwords_with_values[sentiword] = sentivalues
+        words_with_sentimentvalues.append(sentiwords_with_values)
     
-    print "Storing list of words for Bing: ", words
-    file = codecs.open("bing_words.txt", "w", "utf8")
-    file.writelines(words)
-    file.close()
-    
-    subprocess.Popen("bing_translater.exe")
-    
-    lex = Lexicon(GoogleBingTranslater(), SentiWordNetLexicon)
-    
+    return words_with_sentimentvalues
         
 
    
 if __name__ == '__main__':
     #Insert all words to be translated into the googlebing translator in order to augment with Bing...
-    lex = Lexicon(GoogleBingTranslater(), SentiWordNetLexicon())
-    print lex.translate_and_get_lexicon_sentiment("good", pos_tag="NMASC")
+    lex = Lexicon(BingTranslater(), SentiWordNetLexicon())
+    print lex.translate_and_get_lexicon_sentiment("good")
     
 #    swn = SentiWordNetCorpusReader('SentiWordNet_3.0.0_20130122.txt')
 #    for senti_synset in swn.all_senti_synsets():

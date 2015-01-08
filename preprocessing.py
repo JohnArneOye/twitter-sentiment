@@ -12,6 +12,8 @@ import re
 from tagger import Tagger
 from analyzer import Analyzer
 import string
+from lexicon import lexicon
+import plotting
 
 def remove_retweets(tweets):
     """
@@ -224,6 +226,23 @@ def remove_link_classes(tweets):
         t.text = link_replaced_text
     return tweets
 
+def lexicon_lookup():
+    """
+    Fetches the tweets and performs lexicon translatino and lookup.
+    """
+    tweets = utils.get_pickles(0)
+    words_with_values = lexicon.perform_sentiment_lexicon_lookup(tweets)
+    print "Storing..."
+    utils.store_sentimentvalues(words_with_values, "models/sentimentvalues_random_dataset")
+    tweets = utils.get_pickles(1)
+    words_with_values = lexicon.perform_sentiment_lexicon_lookup(tweets)
+    print "Storing..."
+    utils.store_sentimentvalues(words_with_values, "models/sentimentvalues_rosenborg_dataset")
+    tweets = utils.get_pickles(2)
+    words_with_values = lexicon.perform_sentiment_lexicon_lookup(tweets)
+    print "Storing..."
+    utils.store_sentimentvalues(words_with_values, "models/sentimentvalues_erna_dataset")
+    
 def re_analyze():
     """
     Unpickles preprocessed tweets and performs reanalyzis of these, then stores stats.
@@ -231,6 +250,14 @@ def re_analyze():
     
     return False
 
+def pos_analyse():
+    """
+    Unpickles preprocessed tweets and performs pos-analysis of them. Then stores the stats in a diagram.
+    """
+    tweets = utils.get_pickles(3)
+    data = analyzer.pos_tag_analyze(tweets)
+    plotting.plot_pos_analysis(data, "pos_analysis")
+    return True
 
 def initial_preprocess_all_datasets():
     """

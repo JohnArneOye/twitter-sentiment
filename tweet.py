@@ -29,6 +29,7 @@ class Tweet(object):
         self.word_count = 0
         self.words_with_sentimentvalues={}
         self.link_pos = []
+        self.sentiment_target = ""
         
     def to_tsv(self):
         """
