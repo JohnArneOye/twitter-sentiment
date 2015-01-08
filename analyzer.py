@@ -88,7 +88,7 @@ class Analyzer:
         """
         data = {} #dict to contain all the pos tags and their given values
         
-        #Count all the pos tag frequencies
+        #Count the pos tag frequencies for the different tweet classes
         for t in tweets:
             for phrase in t.tagged_words:
                 for word in phrase:
