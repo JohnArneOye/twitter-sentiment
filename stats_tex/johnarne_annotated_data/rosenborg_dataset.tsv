@@ -6,26 +6,16 @@
  Words & 8842\\
  Users & 320\\
  \hline
- Adjectives & 595\\
- Nouns & 1666\\
- Proper nouns & 437\\
  Users mentioned & 154\\
  Links & 154\\
  Emoticons & = 8\\
  \hline
  Tweets per user & 1.809375\\
  Words per tweet & 15.2711571675\\
- Adjectives per tweet & 1.02763385147\\
- Nouns per tweet & 2.87737478411\\
- Proper nouns per tweet & 0.754749568221\\
  \hline
  Negative tweets  & 85(14.6804835924\%)\\
  Neutral tweets & 349(60.2763385147\%)\\
  Positive tweets & 145(25.0431778929\%)\\
- Average adjectives in negative tweets & 1.51764705882\\
- Average adjectives in neutral tweets & 0.724928366762\\
- Average adjectives in positive tweets & 1.46896551724\\
- Neutral tweets have no adjectives &4367\\
  \end{tabular} 
  \end{center} 
  \end{table} 

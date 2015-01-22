@@ -19,14 +19,29 @@ class TweetRetriever(object):
         auth.set_access_token(ACCESS_TOKEN, ACCESS_SECRET)
         self.api = tweepy.API(auth)
         print "Connection to Twitter API is up."
-        self.query = query
+        
+        arguments = query.split(' ')
+        if len(arguments)>2:
+            self.since=arguments[len(arguments)-2]
+            self.until=arguments[len(arguments)-1]
+            self.query = " ".join(arguments[:len(arguments)-2])
+        else:
+            self.since=None
+            self.until=None
+            self.query = query
 
     def retrieve_for_dataset(self):
         """
         Return a sample of tweets and add to current dataset text file
         """
-        c = tweepy.Cursor(self.api.search, q=self.query, lang="no")
+        if self.since == None and self.until==None:
+            c = tweepy.Cursor(self.api.search, q=self.query, lang="no")
+        else:
+            c = tweepy.Cursor(self.api.search, q=self.query, since=self.since,until=self.until,lang="no")
         results = []
+        print self.query
+        print self.since
+        print self.until
         for tweet in c.items(500):
             results.append(tweet)
         results_list = utils.get_resultsets_text(results)

@@ -189,10 +189,11 @@ class Model(object):
         
         return accuracy, precision, recall, f1_score
     
-    def get_correctly_classified_tweets(self, tweets, sentimentvalues=None):
+    def get_correctly_classified_tweets(self, tweets_and_sentiment):
         """
         Classifies the given set of tweets and returns the ones that were correctly classified.
         """
+        tweets, sentimentvalues = zip(*tweets_and_sentiment)
         if sentimentvalues!=None:
             self.test_words_and_values = sentimentvalues
         count_vector = self.vect.transform([t.text for t in tweets])
@@ -208,11 +209,12 @@ class Model(object):
         tweets, targets = utils.make_subjectivity_targets(tweets)
         #return the tweets where the target match prediction
         correct_tweets = []
+        correct_sentimentvalues = []
         for i in xrange(len(tweets)):
             if predictions[i]==targets[i]:
-                correct_tweets.append(tweets[i]) 
-                print "Tweet: ",tweets[i].text, " ", tweets[i].get_sentiment(), " ", predictions[i]
-        return correct_tweets
+                correct_tweets.append(tweets[i])
+                correct_sentimentvalues.append(sentimentvalues[i])
+        return correct_tweets, correct_sentimentvalues
     
     def set_feature_set(self, featureset, sentimentvalues):
         """

@@ -14,6 +14,7 @@ from analyzer import Analyzer
 import string
 from lexicon import lexicon
 import plotting
+from analyzer import pos_tag_analyze
 
 def remove_retweets(tweets):
     """
@@ -40,6 +41,15 @@ def remove_duplicates_and_retweets(tweets):
             unique_tweets.append(t)
             added_texts.append(t.text)
     return unique_tweets
+
+def remove_retweet_tags(tweets):
+    """    
+    Removes tweets with dublicate text bodies.
+    """
+    for t in tweets:
+        textbody = t.text[2:] if t.text[:2]=='RT' else t.text
+        t.text = textbody
+    return tweets
 
 def correct_words(tweets):
     """
@@ -160,7 +170,7 @@ def replace_links(tweets):
     """
     for tweet in tweets:
         links = [word for word in tweet.text.split(' ') if word[:4]=="http" or word[:3]=="www"]
-        link_replaced_text = " ".join(["<link>" if word[:4]=="http" or word[:3]=="www" else word for word in tweet.text.split(' ')])
+        link_replaced_text = " ".join(["" if word[:4]=="http" or word[:3]=="www" else word for word in tweet.text.split(' ')])
         tweet.text = link_replaced_text
         tweet.links = links         
     return tweets
@@ -226,37 +236,67 @@ def remove_link_classes(tweets):
         t.text = link_replaced_text
     return tweets
 
-def lexicon_lookup():
+def bing_lexicon_lookup():
     """
     Fetches the tweets and performs lexicon translatino and lookup.
     """
     tweets = utils.get_pickles(0)
-    words_with_values = lexicon.perform_sentiment_lexicon_lookup(tweets)
+    words_with_values = lexicon.perform_bing_sentiment_lexicon_lookup(tweets)
     print "Storing..."
     utils.store_sentimentvalues(words_with_values, "models/sentimentvalues_random_dataset")
     tweets = utils.get_pickles(1)
-    words_with_values = lexicon.perform_sentiment_lexicon_lookup(tweets)
+    words_with_values = lexicon.perform_bing_sentiment_lexicon_lookup(tweets)
     print "Storing..."
     utils.store_sentimentvalues(words_with_values, "models/sentimentvalues_rosenborg_dataset")
     tweets = utils.get_pickles(2)
-    words_with_values = lexicon.perform_sentiment_lexicon_lookup(tweets)
+    words_with_values = lexicon.perform_bing_sentiment_lexicon_lookup(tweets)
     print "Storing..."
     utils.store_sentimentvalues(words_with_values, "models/sentimentvalues_erna_dataset")
+
+def google_lexicon_lookup():
+    """
+    Fetches the tweets and performs lexicon translatino and lookup.
+    """
+    tweets = utils.get_pickles(0)
+    words_with_values = lexicon.perform_google_sentiment_lexicon_lookup(tweets)
+    print "Storing..."
+    utils.store_sentimentvalues(words_with_values, "models/google_sentimentvalues_random_dataset")
+    tweets = utils.get_pickles(1)
+    words_with_values = lexicon.perform_google_sentiment_lexicon_lookup(tweets)
+    print "Storing..."
+    utils.store_sentimentvalues(words_with_values, "models/google_sentimentvalues_rosenborg_dataset")
+    tweets = utils.get_pickles(2)
+    words_with_values = lexicon.perform_google_sentiment_lexicon_lookup(tweets)
+    print "Storing..."
+    utils.store_sentimentvalues(words_with_values, "models/google_sentimentvalues_erna_dataset")
     
 def re_analyze():
     """
     Unpickles preprocessed tweets and performs reanalyzis of these, then stores stats.
     """
-    
-    return False
+    labels = ["random",'"rosenborg"','"erna solberg"']
+    data = {}
+    worddata = {}
+    for i in xrange(3):
+        tweets = utils.get_pickles(i)
+        analyzer = Analyzer(utils.annotated_datasets[i], tweets)
+        
+        avg_list,words_list= analyzer.analyze()
+        print avg_list
+        worddata[labels[i]] = words_list
+        data[labels[i]] = avg_list
+    plotting.average_wordclasses(worddata, "averages")
 
-def pos_analyse():
+    plotting.detailed_average_wordclasses(data, "averages2")
+
+def pos_analyze():
     """
     Unpickles preprocessed tweets and performs pos-analysis of them. Then stores the stats in a diagram.
     """
     tweets = utils.get_pickles(3)
-    data = analyzer.pos_tag_analyze(tweets)
-    plotting.plot_pos_analysis(data, "pos_analysis")
+    subjectivity_data, polarity_data = pos_tag_analyze(tweets)
+    plotting.plot_pos_analysis(subjectivity_data, "sub_analysis")
+    plotting.plot_pos_analysis(polarity_data, "pos_analysis")
     return True
 
 def initial_preprocess_all_datasets():
@@ -312,6 +352,21 @@ def classification_preprocess_all_datasets():
         #store tweets in pickles...
         print "Storing pickles..."
         utils.store_pickles(tweets, utils.annotated_datasets[i][24:len(utils.annotated_datasets[i])-4])
+
+def preprocess_tweets(tweets):
+#        tweets = lower_case(tweets)
+    print "Preprocessing"
+    tweets = remove_retweet_tags(tweets)
+    tweets = remove_hastags_and_users(tweets)
+    tweets = count_emoticons(tweets)
+    tweets = replace_links(tweets)
+    tweets = remove_specialchars(tweets)
+    tweets = correct_words(tweets)
+    tweets = stem(tweets)
+    tweets = tokenize(tweets)
+    tweets = pos_tag(tweets)
+    tweets = count_exclamations(tweets)
+    return tweets
         
 def preprocess_tweet(tweet):
     """

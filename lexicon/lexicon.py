@@ -31,7 +31,20 @@ class Lexicon():
         #Translate word
         translated_word = self.translater.translate(word)
         return self.sentiment_lexicon.get_values(translated_word, context, pos_tag)
-
+    
+    def translate_sentence_and_get_lexicon_sentiment(self, sentence):
+        """
+        Returns the translated sentiment values for a whole sentence.
+        """
+        #Translate word
+        translated_sentence = self.translater.translate(sentence)
+        translated_words = tokenizer(translated_sentence)
+        sentiments = []
+        for word in translated_words:
+            sentiment = self.sentiment_lexicon.get_values(word)
+            if sentiment!=None:
+                sentiments.append(sentiment)
+        return sentiments
     
 class SentiWordNetLexicon():
     
@@ -108,7 +121,7 @@ class GoogleTranslater():
         
         #Perform lookup in the text file from the C# translator
         #if there is no match, take the best match from the bing file
-        print "Translated: ", word, " ->", translated_word
+#        print "Translated: ", word, " ->", translated_word
         return translated_word
     
 def get_from_html_text(resultset, target):
@@ -116,10 +129,10 @@ def get_from_html_text(resultset, target):
     Gets the value of a variable target from a html result set from a request.
     """
     index = resultset.find(target)+len(target)+2
-    return resultset[index:index+12].split("'")[0].lower()
+    return resultset[index:index+140].split("'")[0].lower()
      
      
-def perform_sentiment_lexicon_lookup(tweets):
+def perform_bing_sentiment_lexicon_lookup(tweets):
     """
     Performs sentiment lexicon lookup on the tweets, and stores it in the objects.
     """
@@ -156,7 +169,37 @@ def perform_sentiment_lexicon_lookup(tweets):
     
     return words_with_sentimentvalues
         
+def perform_google_sentiment_lexicon_lookup(tweets):
+    """
+    Performs sentiment lexicon lookup on the tweets, and stores it in the objects.
+    """
+           
+    lex = Lexicon(GoogleTranslater(), SentiWordNetLexicon())
+    print "Getting sentiment values"
+    tweet_sentiments = []
+    for t in tweets:
+        tweet_sentiments.append(lex.translate_sentence_and_get_lexicon_sentiment(t.text))
+    
+    print tweet_sentiments
+    reduced_tweet_sentiments = []
+    for sentiments in tweet_sentiments:
+        polar_sum = sum([s[0] for s in sentiments])
+        negative_sum = sum([s[1] for s in sentiments])
+        objective_sum = sum([s[2] for s in sentiments])
+        reduced_tweet_sentiments.append((polar_sum, negative_sum, objective_sum))
+    print reduced_tweet_sentiments
+    return reduced_tweet_sentiments
 
+def tokenizer(sentence):
+    """
+    Tokenizes an english sentence.
+    """
+    words = []
+    for phrase in sentence.split('.'):
+        for piece in phrase.split(','):
+            for word in piece.split(' '):
+                words.append(word)
+    return words
    
 if __name__ == '__main__':
     #Insert all words to be translated into the googlebing translator in order to augment with Bing...

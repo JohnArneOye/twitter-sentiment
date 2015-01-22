@@ -28,6 +28,7 @@ class Tweet(object):
         self.nrof_questionmarks = 0
         self.word_count = 0
         self.words_with_sentimentvalues={}
+        self.sentiments = []
         self.link_pos = []
         self.sentiment_target = ""
         
